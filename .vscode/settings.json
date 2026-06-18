@@ -1,0 +1,7 @@
+{
+  "C_Cpp.default.includePath": [
+    "${workspaceFolder}/extern/glad/include",
+    "${workspaceFolder}/extern/glfw-3.4/include",
+    "${workspaceFolder}/extern/"
+  ]
+}
