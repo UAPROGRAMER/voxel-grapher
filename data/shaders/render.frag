@@ -21,14 +21,19 @@ uniform float cameraFov;
 // Ray
 uniform float maxRayLength;
 
+// Funcs
+
+bool _stop = false;
+void stop() { _stop = true; }
+
 bool approx(float a, float b, float c) { return abs(a - b) <= c; }
 
-int blockFunction(ivec3 coords) {
-@b // For block func
+int blockFunction(ivec3 coords, ivec3 rayDirSign) {
+  @b  // For block func
 }
 
 vec4 displayFunction(float dist, int lastCoord, int blockValue) {
-@d // For display func
+  @d  // For display func
 }
 
 void main() {
@@ -73,7 +78,9 @@ void main() {
   int lastCoord = 0;
 
   while (rayLength <= maxRayLength) {
-    int blockValue = blockFunction(voxelCoord);
+    int blockValue = blockFunction(voxelCoord, rayDirSign);
+
+    if (_stop) return;
 
     if (bool(blockValue)) {
       endColor = displayFunction(rayLength, lastCoord, blockValue);
