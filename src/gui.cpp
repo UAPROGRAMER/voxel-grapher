@@ -13,6 +13,8 @@ GUI::GUI(GUIparams& params) : params(params) {
   blockFuncText.resize(1025);
   displayFuncText.resize(1025);
 
+  savefileNameText.resize(65);
+
   resetFuncs();
 }
 
@@ -93,11 +95,15 @@ void GUI::functionWindow() {
 
     if (ImGui::Button("Load")) isLoadPopup = true;
 
+    ImGui::SameLine();
+
+    if (ImGui::Button("Save")) isSavePopup = true;
+
     ImGui::End();
   }
 }
 
-void GUI::loadSavePopup() {
+void GUI::loadPopup() {
   if (ImGui::BeginPopupModal(
         "Load", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
     ImGui::Text("Savefiles:");
@@ -118,6 +124,40 @@ void GUI::loadSavePopup() {
     if (ImGui::Button("Load") && savefileIndex != (size_t)-1) {
       params.savefile = savefiles.at(savefileIndex);
       params.isLoad = true;
+
+      ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Delete") && savefileIndex != (size_t)-1) {
+      params.savefile = savefiles.at(savefileIndex);
+      params.isDelete = true;
+
+      ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
+
+    ImGui::EndPopup();
+  }
+}
+
+void GUI::savePopup() {
+  if (ImGui::BeginPopupModal(
+        "Save", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+
+    ImGui::Text("Name:");
+
+    ImGui::InputText("##Name", savefileNameText.data(), 64);
+
+    if (ImGui::Button("Save")) {
+      params.savefile = std::string(savefileNameText.data());
+      params.isSave = true;
+      params.blockFunc = std::string(blockFuncText.data());
+      params.displayFunc = std::string(displayFuncText.data());
 
       ImGui::CloseCurrentPopup();
     }
@@ -163,7 +203,19 @@ void GUI::process(float time, float delta, bool cameraMode) {
       ImGuiCond_Appearing, ImVec2(0.5, 0.5));
   }
 
-  loadSavePopup();
+  if (isSavePopup) {
+    isSavePopup = false;
+
+    savefileNameText.clear();
+    savefileNameText.resize(65);
+
+    ImGui::OpenPopup("Save");
+    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
+      ImGuiCond_Appearing, ImVec2(0.5, 0.5));
+  }
+
+  loadPopup();
+  savePopup();
 }
 
 void GUI::draw(float time, float delta) const {

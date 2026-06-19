@@ -149,8 +149,25 @@ void VoxelGrapher::process(float time, float delta) {
       readFileToString("./data/saves/" + guiParams.savefile + "/block.txt");
     guiParams.displayFunc =
       readFileToString("./data/saves/" + guiParams.savefile + "/display.txt");
-    
+
     gui.resetFuncs();
+  }
+
+  if (guiParams.isSave) {
+    guiParams.isSave = false;
+
+    std::filesystem::create_directory("./data/saves/" + guiParams.savefile);
+
+    writeTextFile(
+      "./data/saves/" + guiParams.savefile + "/block.txt", guiParams.blockFunc);
+    writeTextFile("./data/saves/" + guiParams.savefile + "/display.txt",
+      guiParams.displayFunc);
+  }
+
+  if (guiParams.isDelete) {
+    guiParams.isDelete = false;
+
+    std::filesystem::remove_all("./data/saves/" + guiParams.savefile);
   }
 }
 

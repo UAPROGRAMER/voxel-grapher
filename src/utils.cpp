@@ -56,3 +56,13 @@ void checkFile(const std::filesystem::path& path) {
   if (!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path))
     throw VoxelGrapherError("\"" + path.string() + "\" is required.");
 }
+
+void writeTextFile(const std::filesystem::path& path, const std::string& str) {
+  std::ofstream file(path);
+
+  if (!file)
+    throw VoxelGrapherError("Failed to create a file \"" + path.string() +
+      "\". Failed to open a file.");
+  
+  file << str;
+}

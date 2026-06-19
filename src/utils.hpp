@@ -10,3 +10,5 @@ void writeLogFile(const std::string& str) noexcept;
 void checkFolder(const std::filesystem::path& path, bool strong);
 
 void checkFile(const std::filesystem::path& path);
+
+void writeTextFile(const std::filesystem::path& path, const std::string& str);
