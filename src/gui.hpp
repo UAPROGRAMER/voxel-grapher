@@ -15,6 +15,8 @@ struct GUIparams {
   bool isRenderScaleChanged = false;
   bool interpolateRender = false;
   bool interpolationChanged = false;
+  bool isLoad = false;
+  std::string savefile;
 
   GUIparams(const std::string& blockFunc,
     const std::string& displayFunc);
@@ -26,10 +28,15 @@ private:
 
   bool isParamWindow = false;
   bool isInfoWindow = false;
-  bool isFunctionWindow = false;
 
+  bool isFunctionWindow = false;
   std::vector<char> blockFuncText;
   std::vector<char> displayFuncText;
+
+  bool isLoadPopup = false;
+  std::vector<std::string> savefiles;
+  std::vector<const char*> savefilesC;
+  size_t savefileIndex;
 
   float renderScale = 1;
 
@@ -40,6 +47,8 @@ private:
   void paramWindow();
 
   void functionWindow();
+
+  void loadSavePopup();
 
 public:
   GUI(GUIparams& params);

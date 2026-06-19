@@ -3,6 +3,7 @@
 #include "math.hpp"
 
 #include <string>
+#include <filesystem>
 
 GUIparams::GUIparams(
   const std::string& blockFunc, const std::string& displayFunc)
@@ -33,7 +34,7 @@ void GUI::infoWindow() {
     ImGui::Begin("Info", &isInfoWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
     ImGui::TextUnformatted(
-      ("FPS: " + std::to_string(ImGui::GetIO().Framerate)).c_str());
+      ("FPS: " + std::to_string(round(ImGui::GetIO().Framerate))).c_str());
 
     ImGui::End();
   }
@@ -88,7 +89,44 @@ void GUI::functionWindow() {
       params.compileFuncs = true;
     }
 
+    ImGui::SameLine();
+
+    if (ImGui::Button("Load")) isLoadPopup = true;
+
     ImGui::End();
+  }
+}
+
+void GUI::loadSavePopup() {
+  if (ImGui::BeginPopupModal(
+        "Load", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    ImGui::Text("Savefiles:");
+
+    if (ImGui::BeginListBox("##Savefiles",
+          ImVec2(12 * ImGui::GetTextLineHeightWithSpacing(),
+            8 * ImGui::GetTextLineHeightWithSpacing()))) {
+      for (size_t i = 0; i < savefilesC.size(); i++) {
+        if (ImGui::Selectable(savefilesC.at(i), savefileIndex == i))
+          savefileIndex = i;
+
+        if (savefileIndex == i) ImGui::SetItemDefaultFocus();
+      }
+
+      ImGui::EndListBox();
+    }
+
+    if (ImGui::Button("Load") && savefileIndex != (size_t)-1) {
+      params.savefile = savefiles.at(savefileIndex);
+      params.isLoad = true;
+
+      ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
+
+    ImGui::EndPopup();
   }
 }
 
@@ -99,11 +137,33 @@ void GUI::process(float time, float delta, bool cameraMode) {
 
   menuBar();
 
+  infoWindow();
+
   if (!cameraMode) {
-    infoWindow();
     paramWindow();
     functionWindow();
   }
+
+  if (isLoadPopup) {
+    isLoadPopup = false;
+    savefiles.clear();
+    savefilesC.clear();
+    savefileIndex = (size_t)-1;
+
+    for (const auto& file : std::filesystem::directory_iterator("./data/saves"))
+      if (!std::filesystem::is_regular_file(file))
+        savefiles.push_back(file.path().stem().string());
+
+    std::sort(savefiles.begin(), savefiles.end());
+
+    for (const auto& file : savefiles) savefilesC.push_back(file.c_str());
+
+    ImGui::OpenPopup("Load");
+    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
+      ImGuiCond_Appearing, ImVec2(0.5, 0.5));
+  }
+
+  loadSavePopup();
 }
 
 void GUI::draw(float time, float delta) const {

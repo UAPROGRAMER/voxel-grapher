@@ -1,6 +1,7 @@
 #include "voxel_grapher.hpp"
 #include "imgui.hpp"
 #include "error.hpp"
+#include "utils.hpp"
 
 PreprocArgs makePreprocArgs(
   const std::string& blockFunc, const std::string& displayFunc) {
@@ -139,6 +140,17 @@ void VoxelGrapher::process(float time, float delta) {
     glBindTexture(GL_TEXTURE_2D, 0);
 
     guiParams.interpolationChanged = false;
+  }
+
+  if (guiParams.isLoad) {
+    guiParams.isLoad = false;
+
+    guiParams.blockFunc =
+      readFileToString("./data/saves/" + guiParams.savefile + "/block.txt");
+    guiParams.displayFunc =
+      readFileToString("./data/saves/" + guiParams.savefile + "/display.txt");
+    
+    gui.resetFuncs();
   }
 }
 

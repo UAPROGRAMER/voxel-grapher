@@ -32,7 +32,7 @@ int blockFunction(ivec3 coords, ivec3 rayDirSign) {
   @b  // For block func
 }
 
-vec4 displayFunction(float dist, int lastCoord, int blockValue) {
+vec4 displayFunction(float dist, int lastCoord, int blockValue, ivec3 coords) {
   @d  // For display func
 }
 
@@ -83,7 +83,7 @@ void main() {
     if (_stop) return;
 
     if (bool(blockValue)) {
-      endColor = displayFunction(rayLength, lastCoord, blockValue);
+      endColor = displayFunction(rayLength, lastCoord, blockValue, voxelCoord);
       return;
     }
 
