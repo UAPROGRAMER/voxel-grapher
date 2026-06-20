@@ -37,4 +37,6 @@ public:
   void scroll(double xoffset, double yoffset);
 
   void useUniforms(const Shader& shader) const;
+
+  const glm::vec3& getPos() const;
 };

@@ -84,6 +84,14 @@ void VoxelGrapher::process(float time, float delta) {
     }
   }
 
+  {
+    const glm::vec3& pos = camera.getPos();
+
+    guiParams.posX = pos.x;
+    guiParams.posY = pos.y;
+    guiParams.posZ = pos.z;
+  }
+
   gui.process(time, delta, cameraMode);
 
   if (guiParams.resetFuncs) {

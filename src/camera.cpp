@@ -75,3 +75,7 @@ void Camera::useUniforms(const Shader& shader) const {
   shader.setUniformVec3("cameraPos", pos);
   shader.setUniformFloat("cameraFov", fov);
 }
+
+const glm::vec3& Camera::getPos() const {
+  return pos;
+}

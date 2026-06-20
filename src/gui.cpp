@@ -35,8 +35,9 @@ void GUI::infoWindow() {
   if (isInfoWindow) {
     ImGui::Begin("Info", &isInfoWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-    ImGui::TextUnformatted(
-      ("FPS: " + std::to_string(round(ImGui::GetIO().Framerate))).c_str());
+    ImGui::Text("FPS: %.0f", ImGui::GetIO().Framerate);
+
+    ImGui::Text("Pos: %.2f %.2f %.2f", params.posX, params.posY, params.posZ);
 
     ImGui::End();
   }
@@ -67,12 +68,12 @@ void GUI::functionWindow() {
     ImGui::Begin(
       "Function", &isFunctionWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-    ImGui::Text("Block Func:");
+    ImGui::TextUnformatted("Block Func:");
 
     ImGui::InputTextMultiline("##Block Func", blockFuncText.data(), 1024,
       ImVec2(ImGui::GetTextLineHeight() * 32, ImGui::GetTextLineHeight() * 14));
 
-    ImGui::Text("Display Func:");
+    ImGui::TextUnformatted("Display Func:");
 
     ImGui::InputTextMultiline("##Display Func", displayFuncText.data(), 1024,
       ImVec2(ImGui::GetTextLineHeight() * 32, ImGui::GetTextLineHeight() * 14));
@@ -106,7 +107,7 @@ void GUI::functionWindow() {
 void GUI::loadPopup() {
   if (ImGui::BeginPopupModal(
         "Load", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-    ImGui::Text("Savefiles:");
+    ImGui::TextUnformatted("Savefiles:");
 
     if (ImGui::BeginListBox("##Savefiles",
           ImVec2(12 * ImGui::GetTextLineHeightWithSpacing(),
@@ -148,8 +149,7 @@ void GUI::loadPopup() {
 void GUI::savePopup() {
   if (ImGui::BeginPopupModal(
         "Save", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-
-    ImGui::Text("Name:");
+    ImGui::TextUnformatted("Name:");
 
     ImGui::InputText("##Name", savefileNameText.data(), 64);
 

@@ -19,6 +19,9 @@ struct GUIparams {
   bool isSave = false;
   bool isDelete = false;
   std::string savefile;
+  float posX;
+  float posY;
+  float posZ;
 
   GUIparams(const std::string& blockFunc,
     const std::string& displayFunc);
