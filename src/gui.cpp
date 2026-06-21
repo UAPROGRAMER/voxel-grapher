@@ -92,12 +92,12 @@ void GUI::functionWindow() {
     ImGui::Begin(
       "Function", &isFunctionWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-    ImGui::TextUnformatted("Block Func:");
+    ImGui::TextUnformatted("Block Function:");
 
     ImGui::InputTextMultiline("##Block Func", blockFuncText.data(), 1024,
       ImVec2(ImGui::GetTextLineHeight() * 32, ImGui::GetTextLineHeight() * 14));
 
-    ImGui::TextUnformatted("Display Func:");
+    ImGui::TextUnformatted("Display Function:");
 
     ImGui::InputTextMultiline("##Display Func", displayFuncText.data(), 1024,
       ImVec2(ImGui::GetTextLineHeight() * 32, ImGui::GetTextLineHeight() * 14));
