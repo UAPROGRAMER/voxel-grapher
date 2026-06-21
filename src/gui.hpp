@@ -31,6 +31,7 @@ class GUI {
 private:
   GUIparams& params;
 
+  bool isHelpWindow = false;
   bool isParamWindow = false;
   bool isInfoWindow = false;
 
@@ -49,6 +50,8 @@ private:
   float renderScale = 1;
 
   void menuBar();
+
+  void helpWindow();
 
   void infoWindow();
 

@@ -1,5 +1,4 @@
 - add compass to the top right, with cardinal directions
-- add "help" window
 - add readme
 - add time variable into shader
 - add ability to create custom variables

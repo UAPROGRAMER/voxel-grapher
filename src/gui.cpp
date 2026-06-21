@@ -22,6 +22,7 @@ void GUI::menuBar() {
   ImGui::BeginMainMenuBar();
 
   if (ImGui::BeginMenu("Windows")) {
+    if (ImGui::MenuItem("Help")) isHelpWindow = !isHelpWindow;
     if (ImGui::MenuItem("Info")) isInfoWindow = !isInfoWindow;
     if (ImGui::MenuItem("Params")) isParamWindow = !isParamWindow;
     if (ImGui::MenuItem("Function")) isFunctionWindow = !isFunctionWindow;
@@ -29,6 +30,29 @@ void GUI::menuBar() {
   }
 
   ImGui::EndMainMenuBar();
+}
+
+void GUI::helpWindow() {
+  if (isHelpWindow) {
+    ImGui::Begin("Help", &isHelpWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+    ImGui::TextUnformatted("Movement:");
+    ImGui::TextUnformatted("");
+    ImGui::TextUnformatted("E, Q - Up, Down");
+    ImGui::TextUnformatted("W, S - Forwards, Backwards");
+    ImGui::TextUnformatted("D, A - Right, Left");
+    ImGui::TextUnformatted("Shift - 5 times slower");
+    ImGui::TextUnformatted("Control - 5 times faster");
+ImGui::TextUnformatted("");
+    ImGui::TextUnformatted("Function:");
+    ImGui::TextUnformatted("");
+    ImGui::TextUnformatted("Block Func:");
+    ImGui::TextUnformatted("Must return an int, if 0 - continue");
+    ImGui::TextUnformatted("Display Func:");
+    ImGui::TextUnformatted("Must return vec4 for a pixel color");
+
+    ImGui::End();
+  }
 }
 
 void GUI::infoWindow() {
@@ -180,6 +204,7 @@ void GUI::process(float time, float delta, bool cameraMode) {
   infoWindow();
 
   if (!cameraMode) {
+    helpWindow();
     paramWindow();
     functionWindow();
   }
