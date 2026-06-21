@@ -90,6 +90,8 @@ void VoxelGrapher::process(float time, float delta) {
     guiParams.posX = pos.x;
     guiParams.posY = pos.y;
     guiParams.posZ = pos.z;
+
+    guiParams.time = time;
   }
 
   gui.process(time, delta, cameraMode);
@@ -191,6 +193,7 @@ void VoxelGrapher::draw(float time, float delta) const {
   renderShader.setUniformInt("height", height);
   camera.useUniforms(renderShader);
   renderShader.setUniformFloat("maxRayLength", guiParams.maxRayLength);
+  renderShader.trySetUniformFloat("t", time);
 
   glViewport(0, 0, (int)(width * guiParams.renderScale),
     (int)(height * guiParams.renderScale));

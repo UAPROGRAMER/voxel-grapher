@@ -53,4 +53,6 @@ public:
   void setUniformFloat(const std::string& name, float v) const;
 
   void setUniformVec3(const std::string& name, const glm::vec3& v) const;
+
+  void trySetUniformFloat(const std::string& name, float v) const;
 };

@@ -22,6 +22,7 @@ struct GUIparams {
   float posX;
   float posY;
   float posZ;
+  float time;
 
   GUIparams(const std::string& blockFunc,
     const std::string& displayFunc);

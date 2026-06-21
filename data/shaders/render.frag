@@ -25,6 +25,9 @@ uniform float cameraFov;
 // Ray
 uniform float maxRayLength;
 
+// Custom values;
+uniform float t;
+
 // Funcs
 
 bool _stop = false;

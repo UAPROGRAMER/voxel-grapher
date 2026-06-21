@@ -63,6 +63,8 @@ void GUI::infoWindow() {
 
     ImGui::Text("Pos: %.2f %.2f %.2f", params.posX, params.posY, params.posZ);
 
+    ImGui::Text("Time: %.2f", params.time);
+
     ImGui::End();
   }
 }
