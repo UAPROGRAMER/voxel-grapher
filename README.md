@@ -88,6 +88,9 @@ If `0` is returned ray calculation continues. Otherwise the `displayFunction` is
 
 Consts you can use:
 - `float epsilon` - 1e-9
+- `float pi` - to the tenth digit
+- `float e` - to the tenth digit
+- `float phi` - to the tenth digit
 
 Vars you can use:
 - `ivec3 coords` - voxel coords
@@ -112,6 +115,9 @@ The returned color will be applied to the pixel whose ray we just calculated.
 
 Consts you can use:
 - `float epsilon` - 1e-9
+- `float pi` - to the tenth digit
+- `float e` - to the tenth digit
+- `float phi` - to the tenth digit
 
 Vars you can use:
 - `ivec3 coords` - voxel coords

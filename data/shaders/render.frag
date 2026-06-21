@@ -2,6 +2,10 @@
 
 // a very small number
 const float epsilon = 0.000000001;
+// math constants to the tenth digit
+const float pi = 3.1415926535;
+const float e = 2.7182818284;
+const float phi = 1.6180339887;
 
 in vec2 fragPos;
 
