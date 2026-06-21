@@ -1,8 +1,7 @@
 - add compass to the top right, with cardinal directions
-- add readme
 - add time variable into shader
 - add ability to create custom variables
-- add math constants to the shader and make a list of allowed vars and funcs to use
+- add math constants to the shader
 - add ability to take sceenshots
 - add shortcuts for the windows
 - add more comments
