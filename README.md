@@ -65,6 +65,11 @@ Q - move down
 Shift - 5 times slower \
 Control - 5 times faster
 
+Alt+Z - open help window
+Alt+X - open info window
+Alt+C - open parameters window
+Alt+V - open functions window
+
 ### Graphs
 
 `blockFunction` and `displayFunction` are essentialy just GLSH code. For using the program right, follow rules that tell what constants, variables, and functions you are allowed to use.
