@@ -30,6 +30,11 @@ void GUI::menuBar() {
     ImGui::EndMenu();
   }
 
+  if (ImGui::BeginMenu("Tools")) {
+    if (ImGui::MenuItem("Screenshot")) params.screenshot = true;
+    ImGui::EndMenu();
+  }
+
   ImGui::EndMainMenuBar();
 }
 

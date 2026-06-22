@@ -14,8 +14,10 @@ PreprocArgs makePreprocArgs(
 VoxelGrapher::VoxelGrapher(GLFWwindow* window, int width, int height)
   : window(window),
     width(width),
-    cameraMode(false),
     height(height),
+    renderWidth(width),
+    renderHeight(height),
+    cameraMode(false),
     renderShader("./data/shaders/render.vert", "./data/shaders/render.frag",
       makePreprocArgs(defaultBlockFunc, defaultDisplayFunc)),
     displayShader("./data/shaders/display.vert", "./data/shaders/display.frag"),
@@ -93,13 +95,14 @@ void VoxelGrapher::process(float time, float delta) {
 
         if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
           guiParams.isParamShotcut = true;
-        
+
         if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS)
           guiParams.isFunctionShotcut = true;
       }
     }
   }
 
+  // Data sent to the GUI
   {
     const glm::vec3& pos = camera.getPos();
 
@@ -111,6 +114,34 @@ void VoxelGrapher::process(float time, float delta) {
   }
 
   gui.process(time, delta, cameraMode);
+
+  // Chenking data GUI sent
+  if (guiParams.screenshot) {
+    guiParams.screenshot = false;
+
+    std::vector<uint8_t> screenshotRGBA;
+    screenshotRGBA.resize(renderWidth * renderHeight * 4ull);
+
+    glBindTexture(GL_TEXTURE_2D, renderTexture);
+
+    glGetTexImage(
+      GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, screenshotRGBA.data());
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    std::vector<uint8_t> screenshotBGR;
+    screenshotBGR.resize(renderWidth * renderHeight * 3);
+
+    for (size_t i = 0; i < renderWidth * renderHeight; i++) {
+      screenshotBGR.at(i * 3) = screenshotRGBA.at(i * 4 + 2);
+      screenshotBGR.at(i * 3 + 1) = screenshotRGBA.at(i * 4 + 1);
+      screenshotBGR.at(i * 3 + 2) = screenshotRGBA.at(i * 4);
+    }
+
+    createBmpImage(
+      "./data/screenshots/" + std::to_string(std::time(nullptr)) + ".bmp",
+      renderWidth, renderHeight, screenshotBGR);
+  }
 
   if (guiParams.resetFuncs) {
     guiParams.blockFunc = defaultBlockFunc;
@@ -140,12 +171,13 @@ void VoxelGrapher::process(float time, float delta) {
   }
 
   if (guiParams.isRenderScaleChanged) {
+    renderWidth = (int)(width * guiParams.renderScale);
+    renderHeight = (int)(height * guiParams.renderScale);
+
     glBindTexture(GL_TEXTURE_2D, renderTexture);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-      (int)(width * guiParams.renderScale),
-      (int)(height * guiParams.renderScale), 0, GL_RGBA, GL_UNSIGNED_BYTE,
-      NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, renderWidth, renderHeight, 0,
+      GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -211,8 +243,7 @@ void VoxelGrapher::draw(float time, float delta) const {
   renderShader.setUniformFloat("maxRayLength", guiParams.maxRayLength);
   renderShader.trySetUniformFloat("t", time);
 
-  glViewport(0, 0, (int)(width * guiParams.renderScale),
-    (int)(height * guiParams.renderScale));
+  glViewport(0, 0, renderWidth, renderHeight);
 
   screen.render();
 
@@ -235,13 +266,15 @@ void VoxelGrapher::draw(float time, float delta) const {
 void VoxelGrapher::windowResize(int _width, int _height) {
   width = _width;
   height = _height;
+  renderWidth = (int)(width * guiParams.renderScale);
+  renderHeight = (int)(height * guiParams.renderScale);
 
   glViewport(0, 0, width, height);
 
   glBindTexture(GL_TEXTURE_2D, renderTexture);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (int)(width * guiParams.renderScale),
-    (int)(height * guiParams.renderScale), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, renderWidth, renderHeight, 0, GL_RGBA,
+    GL_UNSIGNED_BYTE, NULL);
 
   glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -10,6 +10,7 @@ Cross platform program for visualizing 3D graphs, both using math and programing
 - Save and load custom graphs
 - Diferent types of voxels that you can create
 - Custom display function for the voxels
+- Make screenshots of your current rendered frame and save it to a .bpm file
 
 ### Used
 

@@ -11,6 +11,8 @@ private:
   GLFWwindow* window;
   int width;
   int height;
+  int renderWidth;
+  int renderHeight;
 
   bool cameraMode;
 

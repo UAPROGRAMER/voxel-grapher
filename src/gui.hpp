@@ -27,6 +27,7 @@ struct GUIparams {
   bool isParamShotcut = false;
   bool isInfoShotcut = false;
   bool isFunctionShotcut = false;
+  bool screenshot = false;
 
   GUIparams(const std::string& blockFunc,
     const std::string& displayFunc);

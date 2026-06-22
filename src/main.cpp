@@ -34,12 +34,17 @@ int main() {
     checkFolder("./data/icons", true);
 
     checkFolder("./data/logs", false);
+    checkFolder("./data/saves", false);
+    checkFolder("./data/screenshots", false);
 
-    checkFile("./data/shaders/default.vert");
-    checkFile("./data/shaders/default.frag");
+    checkFile("./data/shaders/render.vert");
+    checkFile("./data/shaders/render.frag");
+    checkFile("./data/shaders/display.vert");
+    checkFile("./data/shaders/display.frag");
 
     checkFile("./data/icons/icon32.png");
     checkFile("./data/icons/icon64.png");
+    checkFile("./data/icons/icon.ico");
 
     // Glfw init
 
