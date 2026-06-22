@@ -82,6 +82,22 @@ void VoxelGrapher::process(float time, float delta) {
         camera.setSpeed(10);
       else camera.setSpeed(50);
     }
+
+    if (!cameraMode) {
+      if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+          guiParams.isHelpShotcut = true;
+
+        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+          guiParams.isInfoShotcut = true;
+
+        if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+          guiParams.isParamShotcut = true;
+        
+        if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS)
+          guiParams.isFunctionShotcut = true;
+      }
+    }
   }
 
   {

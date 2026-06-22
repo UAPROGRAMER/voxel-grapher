@@ -23,6 +23,10 @@ struct GUIparams {
   float posY;
   float posZ;
   float time;
+  bool isHelpShotcut = false;
+  bool isParamShotcut = false;
+  bool isInfoShotcut = false;
+  bool isFunctionShotcut = false;
 
   GUIparams(const std::string& blockFunc,
     const std::string& displayFunc);

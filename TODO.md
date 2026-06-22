@@ -1,6 +1,5 @@
 - add compass to the top right, with cardinal directions
 - add ability to create custom variables
 - add ability to take sceenshots
-- add shortcuts for the windows
 - add more comments
 - add examples

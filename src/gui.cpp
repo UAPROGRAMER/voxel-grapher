@@ -22,10 +22,11 @@ void GUI::menuBar() {
   ImGui::BeginMainMenuBar();
 
   if (ImGui::BeginMenu("Windows")) {
-    if (ImGui::MenuItem("Help")) isHelpWindow = !isHelpWindow;
-    if (ImGui::MenuItem("Info")) isInfoWindow = !isInfoWindow;
-    if (ImGui::MenuItem("Params")) isParamWindow = !isParamWindow;
-    if (ImGui::MenuItem("Function")) isFunctionWindow = !isFunctionWindow;
+    if (ImGui::MenuItem("Help", "Alt+Z")) isHelpWindow = !isHelpWindow;
+    if (ImGui::MenuItem("Info", "Alt+X")) isInfoWindow = !isInfoWindow;
+    if (ImGui::MenuItem("Params", "Alt+C")) isParamWindow = !isParamWindow;
+    if (ImGui::MenuItem("Function", "Alt+V"))
+      isFunctionWindow = !isFunctionWindow;
     ImGui::EndMenu();
   }
 
@@ -43,7 +44,7 @@ void GUI::helpWindow() {
     ImGui::TextUnformatted("D, A - Right, Left");
     ImGui::TextUnformatted("Shift - 5 times slower");
     ImGui::TextUnformatted("Control - 5 times faster");
-ImGui::TextUnformatted("");
+    ImGui::TextUnformatted("");
     ImGui::TextUnformatted("Function:");
     ImGui::TextUnformatted("");
     ImGui::TextUnformatted("Block Func:");
@@ -201,6 +202,28 @@ void GUI::process(float time, float delta, bool cameraMode) {
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 
+  // Shotcuts
+  if (params.isHelpShotcut) {
+    isHelpWindow = true;
+    params.isHelpShotcut = false;
+  }
+
+  if (params.isInfoShotcut) {
+    isInfoWindow = true;
+    params.isInfoShotcut = false;
+  }
+
+  if (params.isParamShotcut) {
+    isParamWindow = true;
+    params.isParamShotcut = false;
+  }
+
+  if (params.isFunctionShotcut) {
+    isFunctionWindow = true;
+    params.isFunctionShotcut = false;
+  }
+
+  // Main windows and other
   menuBar();
 
   infoWindow();
