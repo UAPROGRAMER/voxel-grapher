@@ -3,14 +3,6 @@
 #include "error.hpp"
 #include "utils.hpp"
 
-PreprocArgs makePreprocArgs(
-  const std::string& blockFunc, const std::string& displayFunc) {
-  return {
-    {'b', blockFunc  },
-    {'d', displayFunc}
-  };
-}
-
 VoxelGrapher::VoxelGrapher(GLFWwindow* window, int width, int height)
   : window(window),
     width(width),
@@ -19,12 +11,15 @@ VoxelGrapher::VoxelGrapher(GLFWwindow* window, int width, int height)
     renderHeight(height),
     cameraMode(false),
     renderShader("./data/shaders/render.vert", "./data/shaders/render.frag",
-      makePreprocArgs(defaultBlockFunc, defaultDisplayFunc)),
+      makePreprocArgs(defaultBlockFunc, defaultDisplayFunc, "")),
     displayShader("./data/shaders/display.vert", "./data/shaders/display.frag"),
     screen(renderTexture, width, height),
     camera(width, height),
-    guiParams(defaultBlockFunc, defaultDisplayFunc),
-    gui(guiParams) {}
+    guiParams(defaultBlockFunc, defaultDisplayFunc, variables),
+    gui(guiParams),
+    variables({Variable("Var")}) {
+  guiParams.compileFuncs = true;
+}
 
 void VoxelGrapher::run() {
   float lastTime;
@@ -161,9 +156,14 @@ void VoxelGrapher::process(float time, float delta) {
 
   if (guiParams.compileFuncs) {
     try {
+      std::string customVariables;
+      for (const auto& variable : variables)
+        customVariables += variable.toString();
+
       Shader newShader("./data/shaders/render.vert",
         "./data/shaders/render.frag",
-        makePreprocArgs(guiParams.blockFunc, guiParams.displayFunc));
+        makePreprocArgs(
+          guiParams.blockFunc, guiParams.displayFunc, customVariables));
 
       renderShader = std::move(newShader);
 
@@ -249,6 +249,9 @@ void VoxelGrapher::draw(float time, float delta) const {
   camera.useUniforms(renderShader);
   renderShader.setUniformFloat("maxRayLength", guiParams.maxRayLength);
   renderShader.trySetUniformFloat("t", time);
+
+  for (const auto& variable : variables)
+    renderShader.trySetUniformFloat(variable.name, variable.value);
 
   glViewport(0, 0, renderWidth, renderHeight);
 

@@ -1,5 +1,14 @@
 #include "preprocessor.hpp"
 
+PreprocArgs makePreprocArgs(const std::string& blockFunc,
+  const std::string& displayFunc, const std::string& customVariables) {
+  return {
+    {'b', blockFunc      },
+    {'d', displayFunc    },
+    {'v', customVariables}
+  };
+}
+
 std::string preprocess(const PreprocArgs& args, const std::string& str) {
   std::size_t size = 0;
 

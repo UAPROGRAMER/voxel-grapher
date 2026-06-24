@@ -25,8 +25,11 @@ uniform float cameraFov;
 // Ray
 uniform float maxRayLength;
 
-// Custom values;
+// Time variable
 uniform float t;
+
+// Custom variables
+@v
 
 // Funcs
 

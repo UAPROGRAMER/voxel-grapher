@@ -5,15 +5,17 @@
 #include <string>
 #include <filesystem>
 
-GUIparams::GUIparams(
-  const std::string& blockFunc, const std::string& displayFunc)
-  : blockFunc(blockFunc), displayFunc(displayFunc) {}
+GUIparams::GUIparams(const std::string& blockFunc,
+  const std::string& displayFunc, std::vector<Variable>& variables)
+  : blockFunc(blockFunc), displayFunc(displayFunc), variables(variables) {}
 
 GUI::GUI(GUIparams& params) : params(params) {
   blockFuncText.resize(1025);
   displayFuncText.resize(1025);
 
   savefileNameText.resize(65);
+
+  variableNameText.resize(65);
 
   resetFuncs();
 }
@@ -27,6 +29,7 @@ void GUI::menuBar() {
     if (ImGui::MenuItem("Parameters", "Alt+C")) isParamWindow = !isParamWindow;
     if (ImGui::MenuItem("Function", "Alt+V"))
       isFunctionWindow = !isFunctionWindow;
+    if (ImGui::MenuItem("Variables")) isVariablesWindow = !isVariablesWindow;
     ImGui::EndMenu();
   }
 
@@ -136,6 +139,51 @@ void GUI::functionWindow() {
   }
 }
 
+void GUI::variablesWindow() {
+  if (isVariablesWindow) {
+    ImGui::Begin(
+      "Variables", &isVariablesWindow, ImGuiWindowFlags_AlwaysAutoResize);
+
+    ImGui::TextUnformatted("Variables:");
+
+    if (ImGui::BeginListBox("##Variables",
+          ImVec2(12 * ImGui::GetTextLineHeightWithSpacing(),
+            8 * ImGui::GetTextLineHeightWithSpacing()))) {
+      for (size_t i = 0; i < params.variables.size(); i++) {
+        if (ImGui::Selectable(
+              params.variables.at(i).name.c_str(), variableIndex == i))
+          variableIndex = i;
+
+        if (variableIndex == i) ImGui::SetItemDefaultFocus();
+      }
+
+      ImGui::EndListBox();
+    }
+
+    if (variableIndex != (size_t)-1)
+      ImGui::DragFloat("##Value", &params.variables.at(variableIndex).value,
+        params.variables.at(variableIndex).step,
+        params.variables.at(variableIndex).min,
+        params.variables.at(variableIndex).max);
+
+    if (ImGui::Button("Add")) isAddVariablePopup = true;
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Change") && variableIndex != (size_t)-1)
+      isChangeVariablePopup = true;
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Delete") && variableIndex != (size_t)-1) {
+      params.variables.erase(params.variables.begin() + variableIndex);
+      variableIndex = (size_t)-1;
+    }
+
+    ImGui::End();
+  }
+}
+
 void GUI::loadPopup() {
   if (ImGui::BeginPopupModal(
         "Load", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
@@ -202,6 +250,75 @@ void GUI::savePopup() {
   }
 }
 
+void GUI::addVariablePopup() {
+  if (ImGui::BeginPopupModal(
+        "Add Variable", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    ImGui::TextUnformatted("Name:");
+
+    ImGui::InputText("##Name", variableNameText.data(), 64);
+
+    ImGui::TextUnformatted("Step:");
+
+    ImGui::InputFloat("##Step", &variableStep);
+
+    ImGui::TextUnformatted("Min:");
+
+    ImGui::InputFloat("##Min", &variableMin);
+
+    ImGui::TextUnformatted("Max:");
+
+    ImGui::InputFloat("##Max", &variableMax);
+
+    if (ImGui::Button("Add")) {
+      params.variables.push_back(
+        Variable(std::string(variableNameText.data())));
+
+      params.variables.at(params.variables.size() - 1).step = variableStep;
+      params.variables.at(params.variables.size() - 1).min = variableMin;
+      params.variables.at(params.variables.size() - 1).max = variableMax;
+
+      ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
+
+    ImGui::EndPopup();
+  }
+}
+
+void GUI::changeVariablePopup() {
+  if (ImGui::BeginPopupModal(
+        "Change Variable", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+    ImGui::TextUnformatted("Step:");
+
+    ImGui::InputFloat("##Step", &variableStep);
+
+    ImGui::TextUnformatted("Min:");
+
+    ImGui::InputFloat("##Min", &variableMin);
+
+    ImGui::TextUnformatted("Max:");
+
+    ImGui::InputFloat("##Max", &variableMax);
+
+    if (ImGui::Button("Confirm")) {
+      params.variables.at(variableIndex).step = variableStep;
+      params.variables.at(variableIndex).min = variableMin;
+      params.variables.at(variableIndex).max = variableMax;
+
+      ImGui::CloseCurrentPopup();
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Cancel")) ImGui::CloseCurrentPopup();
+
+    ImGui::EndPopup();
+  }
+}
+
 void GUI::process(float time, float delta, bool cameraMode) {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
@@ -237,6 +354,7 @@ void GUI::process(float time, float delta, bool cameraMode) {
     helpWindow();
     paramWindow();
     functionWindow();
+    variablesWindow();
   }
 
   if (isLoadPopup) {
@@ -269,8 +387,37 @@ void GUI::process(float time, float delta, bool cameraMode) {
       ImGuiCond_Appearing, ImVec2(0.5, 0.5));
   }
 
+  if (isAddVariablePopup) {
+    isAddVariablePopup = false;
+
+    variableNameText.clear();
+    variableNameText.resize(65);
+
+    variableStep = params.variables.at(variableIndex).step;
+    variableMin = params.variables.at(variableIndex).min;
+    variableMax = params.variables.at(variableIndex).max;
+
+    ImGui::OpenPopup("Add Variable");
+    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
+      ImGuiCond_Appearing, ImVec2(0.5, 0.5));
+  }
+
+  if (isChangeVariablePopup) {
+    isChangeVariablePopup = false;
+
+    variableStep = 0.01;
+    variableMin = 0;
+    variableMax = 1;
+
+    ImGui::OpenPopup("Change Variable");
+    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
+      ImGuiCond_Appearing, ImVec2(0.5, 0.5));
+  }
+
   loadPopup();
   savePopup();
+  addVariablePopup();
+  changeVariablePopup();
 }
 
 void GUI::draw(float time, float delta) const {

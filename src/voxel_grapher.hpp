@@ -5,6 +5,7 @@
 #include "screen.hpp"
 #include "camera.hpp"
 #include "gui.hpp"
+#include "variable.hpp"
 
 class VoxelGrapher {
 private:
@@ -22,6 +23,7 @@ private:
   Camera camera;
   GUIparams guiParams;
   GUI gui;
+  std::vector<Variable> variables;
 
   unsigned int renderTexture;
   float lastScreenshotTime = 0;

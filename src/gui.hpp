@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "variable.hpp"
+
 struct GUIparams {
   float maxRayLength = 50;
   std::string blockFunc;
@@ -28,9 +30,11 @@ struct GUIparams {
   bool isInfoShotcut = false;
   bool isFunctionShotcut = false;
   bool screenshot = false;
+  std::vector<Variable>& variables;
+  
 
-  GUIparams(const std::string& blockFunc,
-    const std::string& displayFunc);
+  GUIparams(const std::string& blockFunc, const std::string& displayFunc,
+    std::vector<Variable>& variables);
 };
 
 class GUI {
@@ -53,6 +57,17 @@ private:
   bool isSavePopup = false;
   std::vector<char> savefileNameText;
 
+  bool isVariablesWindow = false;
+  size_t variableIndex = (size_t)-1;
+
+  bool isAddVariablePopup = false;
+  std::vector<char> variableNameText;
+
+  bool isChangeVariablePopup = false;
+  float variableStep = 0.01;
+  float variableMin = 0;
+  float variableMax = 0;
+
   float renderScale = 1;
 
   void menuBar();
@@ -65,9 +80,15 @@ private:
 
   void functionWindow();
 
+  void variablesWindow();
+
   void loadPopup();
 
   void savePopup();
+
+  void addVariablePopup();
+
+  void changeVariablePopup();
 
 public:
   GUI(GUIparams& params);

@@ -1,3 +1,3 @@
 - add compass to the top right, with cardinal directions
-- add ability to create custom variables
+- add check for variable names
 - add examples
