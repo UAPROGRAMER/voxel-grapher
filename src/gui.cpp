@@ -24,7 +24,7 @@ void GUI::menuBar() {
   if (ImGui::BeginMenu("Windows")) {
     if (ImGui::MenuItem("Help", "Alt+Z")) isHelpWindow = !isHelpWindow;
     if (ImGui::MenuItem("Info", "Alt+X")) isInfoWindow = !isInfoWindow;
-    if (ImGui::MenuItem("Params", "Alt+C")) isParamWindow = !isParamWindow;
+    if (ImGui::MenuItem("Parameters", "Alt+C")) isParamWindow = !isParamWindow;
     if (ImGui::MenuItem("Function", "Alt+V"))
       isFunctionWindow = !isFunctionWindow;
     ImGui::EndMenu();

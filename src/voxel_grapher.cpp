@@ -59,6 +59,9 @@ void VoxelGrapher::process(float time, float delta) {
       }
     }
 
+    if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS)
+      guiParams.screenshot = true;
+
     if (cameraMode) {
       if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.moveForward(delta, 1);
@@ -119,28 +122,32 @@ void VoxelGrapher::process(float time, float delta) {
   if (guiParams.screenshot) {
     guiParams.screenshot = false;
 
-    std::vector<uint8_t> screenshotRGBA;
-    screenshotRGBA.resize(renderWidth * renderHeight * 4ull);
+    if (lastScreenshotTime + 2 <= time) {
+      lastScreenshotTime = time;
 
-    glBindTexture(GL_TEXTURE_2D, renderTexture);
+      std::vector<uint8_t> screenshotRGBA;
+      screenshotRGBA.resize(renderWidth * renderHeight * 4ull);
 
-    glGetTexImage(
-      GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, screenshotRGBA.data());
+      glBindTexture(GL_TEXTURE_2D, renderTexture);
 
-    glBindTexture(GL_TEXTURE_2D, 0);
+      glGetTexImage(
+        GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, screenshotRGBA.data());
 
-    std::vector<uint8_t> screenshotBGR;
-    screenshotBGR.resize(renderWidth * renderHeight * 3);
+      glBindTexture(GL_TEXTURE_2D, 0);
 
-    for (size_t i = 0; i < renderWidth * renderHeight; i++) {
-      screenshotBGR.at(i * 3) = screenshotRGBA.at(i * 4 + 2);
-      screenshotBGR.at(i * 3 + 1) = screenshotRGBA.at(i * 4 + 1);
-      screenshotBGR.at(i * 3 + 2) = screenshotRGBA.at(i * 4);
+      std::vector<uint8_t> screenshotBGR;
+      screenshotBGR.resize(renderWidth * renderHeight * 3);
+
+      for (size_t i = 0; i < renderWidth * renderHeight; i++) {
+        screenshotBGR.at(i * 3) = screenshotRGBA.at(i * 4 + 2);
+        screenshotBGR.at(i * 3 + 1) = screenshotRGBA.at(i * 4 + 1);
+        screenshotBGR.at(i * 3 + 2) = screenshotRGBA.at(i * 4);
+      }
+
+      createBmpImage(
+        "./data/screenshots/" + std::to_string(std::time(nullptr)) + ".bmp",
+        renderWidth, renderHeight, screenshotBGR);
     }
-
-    createBmpImage(
-      "./data/screenshots/" + std::to_string(std::time(nullptr)) + ".bmp",
-      renderWidth, renderHeight, screenshotBGR);
   }
 
   if (guiParams.resetFuncs) {

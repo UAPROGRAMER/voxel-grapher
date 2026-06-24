@@ -24,6 +24,7 @@ private:
   GUI gui;
 
   unsigned int renderTexture;
+  float lastScreenshotTime = 0;
 
   void process(float time, float delta);
 

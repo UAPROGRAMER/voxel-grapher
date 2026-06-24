@@ -54,6 +54,17 @@ Result will be in `dest` folder alongside with .zip file.
 
 ## Usage
 
+### Menu
+
+Windows:
+- Help window
+- Info window
+- Parameters window
+- Functions window
+
+Tools:
+- Screenshot
+
 ### Controls
 
 W - move forward \
@@ -70,6 +81,7 @@ Alt+Z - open help window
 Alt+X - open info window
 Alt+C - open parameters window
 Alt+V - open functions window
+F2 - take screenshot
 
 ### Graphs
 
