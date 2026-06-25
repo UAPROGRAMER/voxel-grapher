@@ -17,3 +17,5 @@ void writeTextFile(const std::filesystem::path& path, const std::string& str);
 
 void createBmpImage(const std::filesystem::path& path,
   uint32_t width, uint32_t height, const std::vector<uint8_t>& data);
+
+bool isValidId(const std::string& str);

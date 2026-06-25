@@ -135,3 +135,14 @@ void createBmpImage(const std::filesystem::path& path, uint32_t width,
     for (size_t i = 0; i < padding; i++) writeByte(0);
   }
 }
+
+bool isValidId(const std::string& str) {
+  if (str.empty()) return false;
+
+  if (!isalpha(str.at(0))) return false;
+
+  for (char c : str)
+    if (!isalnum(c) && c != '_') return false;
+
+  return true;
+}

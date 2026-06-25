@@ -86,16 +86,19 @@ void VoxelGrapher::process(float time, float delta) {
     if (!cameraMode) {
       if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
         if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-          guiParams.isHelpShotcut = true;
+          guiParams.isHelpShortcut = true;
 
         if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-          guiParams.isInfoShotcut = true;
+          guiParams.isInfoShortcut = true;
 
         if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-          guiParams.isParamShotcut = true;
+          guiParams.isParamShortcut = true;
 
         if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS)
-          guiParams.isFunctionShotcut = true;
+          guiParams.isFunctionShortcut = true;
+
+        if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+          guiParams.isVariablesShortcut = true;
       }
     }
   }

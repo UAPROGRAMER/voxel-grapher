@@ -25,10 +25,11 @@ struct GUIparams {
   float posY;
   float posZ;
   float time;
-  bool isHelpShotcut = false;
-  bool isParamShotcut = false;
-  bool isInfoShotcut = false;
-  bool isFunctionShotcut = false;
+  bool isHelpShortcut = false;
+  bool isParamShortcut = false;
+  bool isInfoShortcut = false;
+  bool isFunctionShortcut = false;
+  bool isVariablesShortcut = false;
   bool screenshot = false;
   std::vector<Variable>& variables;
   

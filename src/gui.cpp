@@ -1,6 +1,7 @@
 #include "gui.hpp"
 #include "imgui.hpp"
 #include "math.hpp"
+#include "utils.hpp"
 
 #include <string>
 #include <filesystem>
@@ -29,7 +30,8 @@ void GUI::menuBar() {
     if (ImGui::MenuItem("Parameters", "Alt+C")) isParamWindow = !isParamWindow;
     if (ImGui::MenuItem("Function", "Alt+V"))
       isFunctionWindow = !isFunctionWindow;
-    if (ImGui::MenuItem("Variables")) isVariablesWindow = !isVariablesWindow;
+    if (ImGui::MenuItem("Variables", "Alt+B"))
+      isVariablesWindow = !isVariablesWindow;
     ImGui::EndMenu();
   }
 
@@ -269,7 +271,14 @@ void GUI::addVariablePopup() {
 
     ImGui::InputFloat("##Max", &variableMax);
 
-    if (ImGui::Button("Add")) {
+    if (ImGui::Button("Add") &&
+        isValidId(std::string(variableNameText.data())) &&
+        [&](const std::string& name) -> bool {
+          for (const auto& variable : params.variables)
+            if (variable.name == name) return false;
+          
+          return true;
+        }(std::string(variableNameText.data()))) {
       params.variables.push_back(
         Variable(std::string(variableNameText.data())));
 
@@ -324,25 +333,30 @@ void GUI::process(float time, float delta, bool cameraMode) {
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 
-  // Shotcuts
-  if (params.isHelpShotcut) {
+  // Shortcuts
+  if (params.isHelpShortcut) {
     isHelpWindow = true;
-    params.isHelpShotcut = false;
+    params.isHelpShortcut = false;
   }
 
-  if (params.isInfoShotcut) {
+  if (params.isInfoShortcut) {
     isInfoWindow = true;
-    params.isInfoShotcut = false;
+    params.isInfoShortcut = false;
   }
 
-  if (params.isParamShotcut) {
+  if (params.isParamShortcut) {
     isParamWindow = true;
-    params.isParamShotcut = false;
+    params.isParamShortcut = false;
   }
 
-  if (params.isFunctionShotcut) {
+  if (params.isFunctionShortcut) {
     isFunctionWindow = true;
-    params.isFunctionShotcut = false;
+    params.isFunctionShortcut = false;
+  }
+
+  if (params.isVariablesShortcut) {
+    isVariablesWindow = true;
+    params.isVariablesShortcut = false;
   }
 
   // Main windows and other
@@ -393,9 +407,9 @@ void GUI::process(float time, float delta, bool cameraMode) {
     variableNameText.clear();
     variableNameText.resize(65);
 
-    variableStep = params.variables.at(variableIndex).step;
-    variableMin = params.variables.at(variableIndex).min;
-    variableMax = params.variables.at(variableIndex).max;
+    variableStep = 0.01;
+    variableMin = 0;
+    variableMax = 1;
 
     ImGui::OpenPopup("Add Variable");
     ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
@@ -405,9 +419,9 @@ void GUI::process(float time, float delta, bool cameraMode) {
   if (isChangeVariablePopup) {
     isChangeVariablePopup = false;
 
-    variableStep = 0.01;
-    variableMin = 0;
-    variableMax = 1;
+    variableStep = params.variables.at(variableIndex).step;
+    variableMin = params.variables.at(variableIndex).min;
+    variableMax = params.variables.at(variableIndex).max;
 
     ImGui::OpenPopup("Change Variable");
     ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
