@@ -1,7 +1,0 @@
-return int(
-  approx(
-    sin(coords.x / 17.0) * sin(coords.z / 17.0) * 10,
-    coords.y,
-    0.5
-  )
-);

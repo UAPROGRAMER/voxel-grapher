@@ -83,6 +83,12 @@ Alt+C - open parameters window
 Alt+V - open functions window
 F2 - take screenshot
 
+### Variables
+
+Variables that you create can be used in `blockFunction` and `displayFuction`. When you create a variable you will have to put a valid name (id rules), step, min value, max value.
+
+**!If you create 2 variables that while in lower case are the same, saving and loading will be an undefined behaviour.**
+
 ### Graphs
 
 `blockFunction` and `displayFunction` are essentialy just GLSH code. For using the program right, follow rules that tell what constants, variables, and functions you are allowed to use.
@@ -112,6 +118,9 @@ Consts you can use:
 
 Vars you can use:
 - `ivec3 coords` - voxel coords
+- `float x` - short for coords.x
+- `float y` - short for coords.y
+- `float z` - short for coords.z
 - `ivec3 rayDirSign` - sign of every direction value, only 1 or -1
 - `float t` - time from the start of the program in seconds
 
@@ -140,13 +149,22 @@ Consts you can use:
 
 Vars you can use:
 - `ivec3 coords` - voxel coords
+- `float x` - short for coords.x
+- `float y` - short for coords.y
+- `float z` - short for coords.z
 - `float dist` - distance from the ray origin to the end
-- `int lastCoord` - last axis that was crossed to get to this voxel. 0 - none, starting value. 1 - ox. 2 - oy. 3 - oz.
+- `int lastCoord` - last axis that was crossed to get to this voxel. 0 - none, inside a voxel. 1 - ox. 2 - oy. 3 - oz.
 - `int blockValue` - return value of `blockFunction`
 - `float t` - time from the start of the program in seconds
 
 Funcs you can use:
 - `bool approx(float a, float b, float c)` - returns `true` if difference between `a` and `b` is smaller or equal to `c`
+
+## Galery
+
+<div align="center">
+    <img src="docs/images/" alt="" width="45%"></img>
+</div>
 
 ## License
 

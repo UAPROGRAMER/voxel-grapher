@@ -36,7 +36,9 @@ void GUI::menuBar() {
   }
 
   if (ImGui::BeginMenu("Tools")) {
-    if (ImGui::MenuItem("Screenshot")) params.screenshot = true;
+    if (ImGui::MenuItem("Screenshot", "F2")) params.screenshot = true;
+    if (ImGui::MenuItem("Save", "Alt+S")) isSavePopup = true;
+    if (ImGui::MenuItem("Load", "Alt+D")) isLoadPopup = true;
     ImGui::EndMenu();
   }
 
@@ -92,16 +94,16 @@ void GUI::paramWindow() {
       "Max Ray Length", &params.maxRayLength, 1, 10, 500, "%.0f");
 
     if (ImGui::DragFloat(
-          "Render Scale", &renderScale, 0.01, 0.3, 1.5, "%.1f")) {
+          "Render Scale", &renderScale, 0.005, 0.2, 2, "%.1f")) {
       params.renderScale = round(renderScale * 10) / 10;
       params.isRenderScaleChanged = true;
     }
 
-    if (ImGui::DragFloat("Camera Fov", &params.fov, 1, 5, 180))
+    if (ImGui::DragFloat("Camera Fov", &params.fov, 1, 5, 180, "%.0f"))
       params.cameraChanged = true;
 
     if (ImGui::DragFloat(
-          "Camera Sensitivity", &params.sensitivity, 0.01, 0.01, 0.2))
+          "Camera Sensitivity", &params.sensitivity, 0.01, 0.01, 0.2, "%.2f"))
       params.cameraChanged = true;
 
     if (ImGui::Checkbox("Interpolation", &params.interpolateRender))
@@ -139,14 +141,6 @@ void GUI::functionWindow() {
 
       params.compileFuncs = true;
     }
-
-    ImGui::SameLine();
-
-    if (ImGui::Button("Load")) isLoadPopup = true;
-
-    ImGui::SameLine();
-
-    if (ImGui::Button("Save")) isSavePopup = true;
 
     ImGui::End();
   }
@@ -370,6 +364,16 @@ void GUI::process(float time, float delta, bool cameraMode) {
     params.isVariablesShortcut = false;
   }
 
+  if (params.isSaveShortcut) {
+    isSavePopup = true;
+    params.isSaveShortcut = false;
+  }
+
+  if (params.isLoadShortcut) {
+    isLoadPopup = true;
+    params.isLoadShortcut = false;
+  }
+
   // Main windows and other
   menuBar();
 
@@ -462,4 +466,6 @@ void GUI::resetFuncs() {
 
   for (std::size_t i = 0; i < params.displayFunc.size(); i++)
     displayFuncText.at(i) = params.displayFunc.at(i);
+
+  variableIndex = (size_t)-1;
 }

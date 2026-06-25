@@ -1,0 +1,12 @@
+return int(
+  approx(
+    cos(x / 20) * 20,
+    cos(y / 20) * 20,
+    2
+  ) &&
+  approx(
+    cos(y / 20) * 20,
+    cos(z / 20) * 20,
+    2
+  )
+);

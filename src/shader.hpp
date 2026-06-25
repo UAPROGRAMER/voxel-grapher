@@ -5,14 +5,7 @@
 #include "math.hpp"
 #include "preprocessor.hpp"
 
-const std::string defaultBlockFunc =  //
-  "return int(\n"
-  "  approx(\n"
-  "    sin(coords.x / 17.0) * sin(coords.z / 17.0) * 10,\n"
-  "    coords.y,\n"
-  "    0.5\n"
-  "  )\n"
-  ");";
+const std::string defaultBlockFunc = "return 0;";
 
 const std::string defaultDisplayFunc =  //
   "switch (lastCoord) {\n"
@@ -54,5 +47,9 @@ public:
 
   void setUniformVec3(const std::string& name, const glm::vec3& v) const;
 
+  void trySetUniformInt(const std::string& name, int v) const;
+
   void trySetUniformFloat(const std::string& name, float v) const;
+
+  void trySetUniformVec3(const std::string& name, const glm::vec3& v) const;
 };

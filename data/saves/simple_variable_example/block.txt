@@ -1,0 +1,5 @@
+return int(
+  pow(coords.x, 2) +
+  pow(coords.y, 2) +
+  pow(coords.z, 2) <= 200 * variable
+);

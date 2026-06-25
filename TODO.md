@@ -1,2 +1,0 @@
-- add examples
-- remove default function and variable

@@ -70,13 +70,13 @@ void Camera::scroll(double xoffset, double yoffset) {
 }
 
 void Camera::useUniforms(const Shader& shader) const {
-  shader.setUniformVec3("cameraFront", front);
-  shader.setUniformVec3(
+  shader.trySetUniformVec3("cameraFront", front);
+  shader.trySetUniformVec3(
     "cameraRight", glm::normalize(glm::cross(front, glm::vec3(0, 1, 0))));
-  shader.setUniformVec3("cameraUp",
+  shader.trySetUniformVec3("cameraUp",
     glm::normalize(glm::cross(glm::cross(front, glm::vec3(0, 1, 0)), front)));
-  shader.setUniformVec3("cameraPos", pos);
-  shader.setUniformFloat("cameraFov", fov);
+  shader.trySetUniformVec3("cameraPos", pos);
+  shader.trySetUniformFloat("cameraFov", fov);
 }
 
 const glm::vec3& Camera::getPos() const { return pos; }

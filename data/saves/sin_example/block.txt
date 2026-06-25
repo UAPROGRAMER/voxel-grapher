@@ -1,0 +1,7 @@
+return int(
+  approx(
+    sin(coords.x / 20.0) * 20,
+    coords.y,
+    0.5
+  )
+);

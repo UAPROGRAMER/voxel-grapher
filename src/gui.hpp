@@ -37,6 +37,8 @@ struct GUIparams {
   float fov = 45;
   float sensitivity = 0.1;
   bool cameraChanged = false;
+  bool isLoadShortcut = false;
+  bool isSaveShortcut = false;
 
   GUIparams(const std::string& blockFunc, const std::string& displayFunc,
     std::vector<Variable>& variables);

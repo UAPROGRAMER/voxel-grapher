@@ -39,10 +39,16 @@ void stop() { _stop = true; }
 bool approx(float a, float b, float c) { return abs(a - b) <= c; }
 
 int blockFunction(ivec3 coords, ivec3 rayDirSign) {
+  float x = coords.x;
+  float y = coords.y;
+  float z = coords.z;
   @b  // For block func
 }
 
 vec4 displayFunction(float dist, int lastCoord, int blockValue, ivec3 coords) {
+  float x = coords.x;
+  float y = coords.y;
+  float z = coords.z;
   @d  // For display func
 }
 

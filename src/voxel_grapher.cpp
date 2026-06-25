@@ -18,7 +18,7 @@ VoxelGrapher::VoxelGrapher(GLFWwindow* window, int width, int height)
     camera(width, height),
     guiParams(defaultBlockFunc, defaultDisplayFunc, variables),
     gui(guiParams),
-    variables({Variable("Var")}) {
+    variables() {
   guiParams.compileFuncs = true;
 }
 
@@ -100,6 +100,12 @@ void VoxelGrapher::process(float time, float delta) {
 
         if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
           guiParams.isVariablesShortcut = true;
+
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+          guiParams.isLoadShortcut = true;
+        
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+          guiParams.isSaveShortcut = true;
       }
     }
   }
@@ -231,6 +237,9 @@ void VoxelGrapher::process(float time, float delta) {
     varsFile.read(ini);
 
     for (const auto& variable : ini) {
+      if (variable.first.empty())
+        continue;
+
       variables.push_back(Variable(variable.first));
       variables.at(variables.size() - 1).value =
         std::stof(variable.second.get("value"));
@@ -291,10 +300,10 @@ void VoxelGrapher::draw(float time, float delta) const {
 
   renderShader.use();
 
-  renderShader.setUniformInt("width", width);
-  renderShader.setUniformInt("height", height);
+  renderShader.trySetUniformInt("width", width);
+  renderShader.trySetUniformInt("height", height);
   camera.useUniforms(renderShader);
-  renderShader.setUniformFloat("maxRayLength", guiParams.maxRayLength);
+  renderShader.trySetUniformFloat("maxRayLength", guiParams.maxRayLength);
   renderShader.trySetUniformFloat("t", time);
 
   for (const auto& variable : variables)
