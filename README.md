@@ -2,6 +2,14 @@
 
 Cross platform program for visualizing 3D graphs, both using math and programing. The rendering of the voxels is fully done on gpu, per pixel. This gives results as close to perfect as float point will allow.
 
+- [About](#about-the-project)
+- [Building](#building)
+- [Usage](#usage)
+- [Galery](#galery)
+- [License](#license)
+- [Credits](#credits)
+- [Contact info](#contact-info)
+
 ## About the project
 
 ### Capabilities
@@ -37,7 +45,15 @@ This gives us ability to send less rays for worse quality and better performance
 
 ### Data
 
-`Data` folder contains icons, default saves, and shaders.
+`data` folder contains icons, default saves, and shaders.
+
+### Saves
+
+`saves` folder contains yours and example saves.
+
+### Screenshots
+
+`screenshots` folder contains screenshots you made.
 
 ## Building
 
@@ -162,8 +178,15 @@ Funcs you can use:
 
 ## Galery
 
+<style>
+img {
+  border-radius: 10%;
+}
+</style>
 <div align="center">
-    <img src="docs/images/" alt="" width="45%"></img>
+  <img src="docs/images/sin.webp" alt="sin" width="32%"></img>
+  <img src="docs/images/sphere.webp" alt="sphere" width="32%"></img>
+  <img src="docs/images/stars.webp" alt="stars" width="32%"></img>
 </div>
 
 ## License
