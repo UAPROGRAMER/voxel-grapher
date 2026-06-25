@@ -89,13 +89,20 @@ void GUI::paramWindow() {
     ImGui::Begin("Params", &isParamWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
     ImGui::DragFloat(
-      "Max ray length", &params.maxRayLength, 1, 10, 500, "%.0f");
+      "Max Ray Length", &params.maxRayLength, 1, 10, 500, "%.0f");
 
     if (ImGui::DragFloat(
-          "Render scale", &renderScale, 0.01, 0.3, 1.5, "%.1f")) {
+          "Render Scale", &renderScale, 0.01, 0.3, 1.5, "%.1f")) {
       params.renderScale = round(renderScale * 10) / 10;
       params.isRenderScaleChanged = true;
     }
+
+    if (ImGui::DragFloat("Camera Fov", &params.fov, 1, 5, 180))
+      params.cameraChanged = true;
+
+    if (ImGui::DragFloat(
+          "Camera Sensitivity", &params.sensitivity, 0.01, 0.01, 0.2))
+      params.cameraChanged = true;
 
     if (ImGui::Checkbox("Interpolation", &params.interpolateRender))
       params.interpolationChanged = true;
@@ -280,7 +287,7 @@ void GUI::addVariablePopup() {
         [&](const std::string& name) -> bool {
           for (const auto& variable : params.variables)
             if (variable.name == name) return false;
-          
+
           return true;
         }(std::string(variableNameText.data()))) {
       params.variables.push_back(

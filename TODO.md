@@ -1,4 +1,2 @@
 - add examples
 - remove default function and variable
-- add changeble fov
-- add changeble sensitivity

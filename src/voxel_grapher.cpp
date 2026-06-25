@@ -2,6 +2,7 @@
 #include "imgui.hpp"
 #include "error.hpp"
 #include "utils.hpp"
+#include <mINI/ini.h>
 
 VoxelGrapher::VoxelGrapher(GLFWwindow* window, int width, int height)
   : window(window),
@@ -216,10 +217,30 @@ void VoxelGrapher::process(float time, float delta) {
   if (guiParams.isLoad) {
     guiParams.isLoad = false;
 
+    variables.clear();
+
     guiParams.blockFunc =
       readFileToString("./data/saves/" + guiParams.savefile + "/block.txt");
     guiParams.displayFunc =
       readFileToString("./data/saves/" + guiParams.savefile + "/display.txt");
+
+    mINI::INIFile varsFile("./data/saves/" + guiParams.savefile + "/vars.ini");
+
+    mINI::INIStructure ini;
+
+    varsFile.read(ini);
+
+    for (const auto& variable : ini) {
+      variables.push_back(Variable(variable.first));
+      variables.at(variables.size() - 1).value =
+        std::stof(variable.second.get("value"));
+      variables.at(variables.size() - 1).step =
+        std::stof(variable.second.get("step"));
+      variables.at(variables.size() - 1).min =
+        std::stof(variable.second.get("min"));
+      variables.at(variables.size() - 1).max =
+        std::stof(variable.second.get("max"));
+    }
 
     gui.resetFuncs();
   }
@@ -233,12 +254,32 @@ void VoxelGrapher::process(float time, float delta) {
       "./data/saves/" + guiParams.savefile + "/block.txt", guiParams.blockFunc);
     writeTextFile("./data/saves/" + guiParams.savefile + "/display.txt",
       guiParams.displayFunc);
+
+    mINI::INIFile varsFile("./data/saves/" + guiParams.savefile + "/vars.ini");
+
+    mINI::INIStructure ini;
+
+    for (const auto& variable : variables) {
+      ini[variable.name]["value"] = std::to_string(variable.value);
+      ini[variable.name]["step"] = std::to_string(variable.step);
+      ini[variable.name]["min"] = std::to_string(variable.min);
+      ini[variable.name]["max"] = std::to_string(variable.max);
+    }
+
+    auto a = varsFile.generate(ini);
   }
 
   if (guiParams.isDelete) {
     guiParams.isDelete = false;
 
     std::filesystem::remove_all("./data/saves/" + guiParams.savefile);
+  }
+
+  if (guiParams.cameraChanged) {
+    guiParams.cameraChanged = false;
+
+    camera.setFov(guiParams.fov);
+    camera.setSensitivity(guiParams.sensitivity);
   }
 }
 

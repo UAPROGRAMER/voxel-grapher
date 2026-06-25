@@ -26,6 +26,10 @@ public:
 
   void setSpeed(float speed);
 
+  void setFov(float fov);
+
+  void setSensitivity(float sensitivity);
+
   void moveForward(float delta, float dir);
 
   void moveSideways(float delta, float dir);

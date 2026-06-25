@@ -34,6 +34,9 @@ struct GUIparams {
   std::vector<Variable>& variables;
   float yaw;
   float pitch;
+  float fov = 45;
+  float sensitivity = 0.1;
+  bool cameraChanged = false;
 
   GUIparams(const std::string& blockFunc, const std::string& displayFunc,
     std::vector<Variable>& variables);
