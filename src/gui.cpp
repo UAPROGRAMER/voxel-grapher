@@ -76,6 +76,10 @@ void GUI::infoWindow() {
 
     ImGui::Text("Time: %.2f", params.time);
 
+    ImGui::Text("Yaw: %.2f", params.yaw);
+
+    ImGui::Text("Pitch: %.2f", params.pitch);
+
     ImGui::End();
   }
 }

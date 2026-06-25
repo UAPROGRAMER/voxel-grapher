@@ -39,4 +39,8 @@ public:
   void useUniforms(const Shader& shader) const;
 
   const glm::vec3& getPos() const;
+
+  float getYaw() const;
+  
+  float getPitch() const;
 };

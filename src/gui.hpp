@@ -32,7 +32,8 @@ struct GUIparams {
   bool isVariablesShortcut = false;
   bool screenshot = false;
   std::vector<Variable>& variables;
-  
+  float yaw;
+  float pitch;
 
   GUIparams(const std::string& blockFunc, const std::string& displayFunc,
     std::vector<Variable>& variables);

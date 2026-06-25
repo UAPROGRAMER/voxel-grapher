@@ -112,6 +112,9 @@ void VoxelGrapher::process(float time, float delta) {
     guiParams.posZ = pos.z;
 
     guiParams.time = time;
+
+    guiParams.yaw = camera.getYaw();
+    guiParams.pitch = camera.getPitch();
   }
 
   gui.process(time, delta, cameraMode);

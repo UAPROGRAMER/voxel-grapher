@@ -11,9 +11,7 @@ Camera::Camera(int width, int height)
     speed(50),
     sensitivity(0.1) {}
 
-void Camera::setSpeed(float newSpeed) {
-  speed = newSpeed;
-}
+void Camera::setSpeed(float newSpeed) { speed = newSpeed; }
 
 void Camera::moveForward(float delta, float dir) {
   pos += dir * speed * delta * front;
@@ -38,8 +36,7 @@ void Camera::mouse(double xpos, double ypos, bool focus) {
     oldFocus = focus;
   }
 
-  if (focus == false)
-    return;
+  if (focus == false) return;
 
   float xoffset = xpos - lastX;
   float yoffset = lastY - ypos;
@@ -76,6 +73,12 @@ void Camera::useUniforms(const Shader& shader) const {
   shader.setUniformFloat("cameraFov", fov);
 }
 
-const glm::vec3& Camera::getPos() const {
-  return pos;
+const glm::vec3& Camera::getPos() const { return pos; }
+
+float Camera::getYaw() const {
+  return yaw;
+}
+
+float Camera::getPitch() const {
+  return pitch;
 }

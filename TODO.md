@@ -1,2 +1,4 @@
-- add compass to the top right, with cardinal directions
 - add examples
+- remove default function and variable
+- add changeble fov
+- add changeble sensitivity
