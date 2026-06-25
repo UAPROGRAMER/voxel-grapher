@@ -178,11 +178,6 @@ Funcs you can use:
 
 ## Galery
 
-<style>
-img {
-  border-radius: 10%;
-}
-</style>
 <div align="center">
   <img src="docs/images/sin.webp" alt="sin" width="32%"></img>
   <img src="docs/images/sphere.webp" alt="sphere" width="32%"></img>
