@@ -91,7 +91,7 @@ void GUI::paramWindow() {
     ImGui::Begin("Params", &isParamWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
     ImGui::DragFloat(
-      "Max Ray Length", &params.maxRayLength, 1, 10, 500, "%.0f");
+      "Max Ray Length", &params.maxRayLength, 1, 10, 1000, "%.0f");
 
     if (ImGui::DragFloat(
           "Render Scale", &renderScale, 0.005, 0.2, 2, "%.1f")) {
