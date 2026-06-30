@@ -5,6 +5,7 @@
 
 #include <string>
 #include <filesystem>
+#include <algorithm>
 
 GUIparams::GUIparams(const std::string& blockFunc,
   const std::string& displayFunc, std::vector<Variable>& variables)
