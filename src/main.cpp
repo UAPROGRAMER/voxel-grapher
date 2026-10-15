@@ -79,6 +79,9 @@ int main() {
 
     glfwMakeContextCurrent(window);
 
+    // GLFW Settings
+    glfwSwapInterval(1);
+
     // Callbacks
 
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
