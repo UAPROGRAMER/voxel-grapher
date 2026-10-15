@@ -2,7 +2,7 @@
 #include "imgui.hpp"
 #include "error.hpp"
 #include "utils.hpp"
-#include <mINI/ini.h>
+#include <mini/ini.h>
 
 VoxelGrapher::VoxelGrapher(GLFWwindow* window, int width, int height)
   : window(window),

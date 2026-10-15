@@ -4,6 +4,7 @@
     "${workspaceFolder}/extern/glfw-3.4/include",
     "${workspaceFolder}/extern/glm/glm",
     "${workspaceFolder}/extern/imgui",
+    "${workspaceFolder}/extern/mINI/src",
     "${workspaceFolder}/extern/"
   ]
 }

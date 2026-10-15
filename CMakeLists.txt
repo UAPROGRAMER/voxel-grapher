@@ -68,6 +68,7 @@ target_include_directories(voxel-grapher PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/glfw-3.4/include
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/glm/glm
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui
+  ${CMAKE_CURRENT_SOURCE_DIR}/extern/mINI/src
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/
 )
 
