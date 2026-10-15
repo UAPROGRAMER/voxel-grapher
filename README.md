@@ -118,7 +118,7 @@ Basics:
 Used to check if voxel is solid or not and get the type of voxel.
 
 Function signature:
-``` cxx
+``` glsl
 int blockFunction(args...) {
   @b // @b is replaced with your code
 }
@@ -149,7 +149,7 @@ Funcs you can use:
 Used to determine the color of the pixel after the voxel is determined to be solid by `blockFunction`.
 
 Function signature:
-``` cxx
+``` glsl
 vec4 displayFunction(args...) {
   @d // @d is replaced with your code
 }
