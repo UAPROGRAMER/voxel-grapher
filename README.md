@@ -7,6 +7,7 @@ Cross platform program for visualizing 3D graphs, both using math and programing
 - [Usage](#usage)
 - [Galery](#galery)
 - [License](#license)
+- [NO AI](#no-ai)
 - [Credits](#credits)
 - [Contact info](#contact-info)
 
