@@ -64,6 +64,7 @@ endif()
 target_include_directories(voxel-grapher PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/glad/include
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/glfw-3.4/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/extern/glm/glm
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/
 )
 
