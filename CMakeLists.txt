@@ -36,6 +36,8 @@ set(stb_image
 file(GLOB imgui CONFIGURE_DEPENDS
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui/*.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui/*.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui/backends/imgui_impl_glfw.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui/backends/imgui_impl_opengl3.cpp
 )
 
 # SOURCE
@@ -65,6 +67,7 @@ target_include_directories(voxel-grapher PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/glad/include
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/glfw-3.4/include
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/glm/glm
+  ${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/
 )
 
