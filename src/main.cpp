@@ -2,7 +2,7 @@
 #include "voxel_grapher.hpp"
 #include "utils.hpp"
 #include "error.hpp"
-#include "stb_image/stb_image.h"
+#include <stb/stb_image.h>
 #include "imgui.hpp"
 
 #include <optional>
