@@ -56,14 +56,13 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
+    glfwWindowHintString(GLFW_WAYLAND_APP_ID, "cc.stanislavyatskiv.voxel-grapher");
 
 // Some apple magic (as always)
 #if defined(__APPLE__) && defined(__MACH__)
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    // This can enable aplication to run only in X11
-    // Not used for now, but might add some option later
     /*
     #if defined(__linux__)
         glfwWindowHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);

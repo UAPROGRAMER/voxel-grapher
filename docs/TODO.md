@@ -2,7 +2,6 @@
 
 - remake GUI bus system
 - update icons to better quality (already ordered)
-- add better build (remove exe and zip before new compilation)
 - put variable limit
 - update libraries to newest version
 - change formating

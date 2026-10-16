@@ -1,7 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
-
-// glad must be included first
+#define GLFW_INCLUDE_NONE
 
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
