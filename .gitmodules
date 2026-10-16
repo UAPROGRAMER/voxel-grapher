@@ -7,3 +7,6 @@
 [submodule "extern/mINI"]
 	path = extern/mINI
 	url = https://github.com/metayeti/mINI
+[submodule "extern/glfw"]
+	path = extern/glfw
+	url = https://github.com/glfw/glfw
