@@ -99,12 +99,3 @@ add_custom_command(TARGET voxel-grapher POST_BUILD
     ${CMAKE_CURRENT_SOURCE_DIR}/data
     $<TARGET_FILE_DIR:voxel-grapher>/data
 )
-
-add_custom_target(zip ALL
-  COMMAND ${CMAKE_COMMAND} -E tar cfv
-    "${CMAKE_CURRENT_SOURCE_DIR}/dest/Voxel Grapher.zip"
-    --format=zip
-    "Voxel Grapher"
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/dest
-  DEPENDS voxel-grapher
-)
