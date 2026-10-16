@@ -25,12 +25,6 @@ set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(extern/glfw-3.4)
 
-# STB IMAGE
-
-set(stb_image
-  ${CMAKE_CURRENT_SOURCE_DIR}/extern/stb_image/stb_image.cpp
-)
-
 # IMGUI
 
 file(GLOB imgui CONFIGURE_DEPENDS
@@ -51,12 +45,12 @@ file(GLOB source CONFIGURE_DEPENDS
 find_package(OpenGL REQUIRED)
 
 if(WIN32)
-  add_executable(voxel-grapher WIN32 ${stb_image} ${glad} ${source}
+  add_executable(voxel-grapher WIN32 ${glad} ${source}
     ${imgui} voxel-grapher.rc)
   target_link_libraries(voxel-grapher glfw OpenGL::GL)
   target_link_options(voxel-grapher PRIVATE "-static")
 elseif(UNIX AND NOT APPLE)
-  add_executable(voxel-grapher ${stb_image} ${glad} ${source} ${imgui})
+  add_executable(voxel-grapher ${glad} ${source} ${imgui})
   target_link_libraries(voxel-grapher glfw OpenGL::GL dl pthread)
   target_link_options(
     voxel-grapher PRIVATE "-static-libgcc" "-static-libstdc++"
