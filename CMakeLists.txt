@@ -23,7 +23,7 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
-add_subdirectory(extern/glfw-3.4)
+add_subdirectory(extern/glfw)
 
 # IMGUI
 
@@ -59,7 +59,7 @@ endif()
 
 target_include_directories(voxel-grapher PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/glad/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/extern/glfw-3.4/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/extern/glfw/include
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/glm/glm
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/mINI/src
