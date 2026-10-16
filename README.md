@@ -6,6 +6,7 @@ Cross platform program for visualizing 3D graphs, both using math and programing
 - [Building](#building)
 - [Usage](#usage)
 - [Galery](#galery)
+- [TODO](#todo)
 - [License](#license)
 - [NO AI](#no-ai)
 - [Credits](#credits)
@@ -184,6 +185,10 @@ Funcs you can use:
   <img src="docs/images/sphere.webp" alt="sphere" width="32%"></img>
   <img src="docs/images/stars.webp" alt="stars" width="32%"></img>
 </div>
+
+## TODO
+
+You can find planed and finished TODO tasks there: [TODO](./docs/TODO.md).
 
 ## License
 
