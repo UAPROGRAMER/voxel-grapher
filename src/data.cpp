@@ -1,6 +1,6 @@
 // Some data to be compiled into executable
 
-static const char* info =  //
+const char* info =  //
   "Name: Voxel Grapher\n"
   "Version: 1.1\n"
   "Copyright © 2026 Stanislav Yatskiv\n"
