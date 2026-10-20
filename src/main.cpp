@@ -42,8 +42,9 @@ int main() {
     checkFile("./data/shaders/display.vert");
     checkFile("./data/shaders/display.frag");
 
-    checkFile("./data/icons/icon32.png");
-    checkFile("./data/icons/icon64.png");
+    checkFile("./data/icons/icon512.png");
+    checkFile("./data/icons/icon256.png");
+    checkFile("./data/icons/icon128.png");
     checkFile("./data/icons/icon.ico");
 
     // Glfw init
@@ -89,19 +90,23 @@ int main() {
 
     // Window icon
 
-    GLFWimage windowIcon[2];
+    GLFWimage windowIcon[3];
     int nrChannels;
 
-    windowIcon[0].pixels = stbi_load("./data/icons/icon64.png",
+    windowIcon[0].pixels = stbi_load("./data/icons/icon512.png",
       &(windowIcon[0].width), &(windowIcon[0].height), &nrChannels, 0);
 
-    windowIcon[1].pixels = stbi_load("./data/icons/icon32.png",
+    windowIcon[1].pixels = stbi_load("./data/icons/icon256.png",
       &(windowIcon[1].width), &(windowIcon[1].height), &nrChannels, 0);
 
-    glfwSetWindowIcon(window, 2, windowIcon);
+    windowIcon[2].pixels = stbi_load("./data/icons/icon128.png",
+      &(windowIcon[2].width), &(windowIcon[2].height), &nrChannels, 0);
+
+    glfwSetWindowIcon(window, 3, windowIcon);
 
     stbi_image_free(windowIcon[0].pixels);
     stbi_image_free(windowIcon[1].pixels);
+    stbi_image_free(windowIcon[2].pixels);
 
     // Loading opengl
 

@@ -1,11 +1,11 @@
 ## TODO
 
 - remake GUI bus system
-- update icons to better quality (already ordered)
 - put variable limit
 - update libraries to newest version
 - change formating
 - do profiling and find slow parts
+- add good logging
 
 - add release page to the site
 
