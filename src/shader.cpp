@@ -1,9 +1,9 @@
 #define GLFW_INCLUDE_NONE
 
+#include "shader.hpp"
+
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
-
-#include "shader.hpp"
 
 #include "error.hpp"
 #include "utils.hpp"

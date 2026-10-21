@@ -38,6 +38,10 @@ file(GLOB imgui CONFIGURE_DEPENDS
 
 # GLM
 
+add_subdirectory(extern/glm)
+
+# mINI
+
 add_subdirectory(extern/mINI)
 
 # SOURCE
@@ -61,14 +65,12 @@ elseif(UNIX AND NOT APPLE)
   )
 endif()
 
-target_link_libraries(voxel-grapher
-  glfw OpenGL::GL mINI
+target_link_libraries(voxel-grapher PRIVATE
+  glfw OpenGL::GL mINI glm
 )
 
 target_include_directories(voxel-grapher PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/glad/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/extern/glfw/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/extern/glm/glm
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/
 )
