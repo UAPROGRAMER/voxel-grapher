@@ -36,6 +36,10 @@ file(GLOB imgui CONFIGURE_DEPENDS
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui/backends/imgui_impl_opengl3.cpp
 )
 
+# GLM
+
+add_subdirectory(extern/mINI)
+
 # SOURCE
 
 file(GLOB source CONFIGURE_DEPENDS
@@ -49,22 +53,21 @@ find_package(OpenGL REQUIRED)
 if(WIN32)
   add_executable(voxel-grapher WIN32 ${glad} ${source}
     ${imgui} voxel-grapher.rc)
-  target_link_libraries(voxel-grapher glfw OpenGL::GL)
+  target_link_libraries(voxel-grapher glfw OpenGL::GL mINI)
   target_link_options(voxel-grapher PRIVATE "-static")
 elseif(UNIX AND NOT APPLE)
   add_executable(voxel-grapher ${glad} ${source} ${imgui})
-  target_link_libraries(voxel-grapher glfw OpenGL::GL dl pthread)
+  target_link_libraries(voxel-grapher glfw OpenGL::GL dl pthread mINI::mINI)
   target_link_options(
     voxel-grapher PRIVATE "-static-libgcc" "-static-libstdc++"
   )
 endif()
 
-target_include_directories(voxel-grapher PUBLIC
+target_include_directories(voxel-grapher PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/glad/include
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/glfw/include
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/glm/glm
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui
-  ${CMAKE_CURRENT_SOURCE_DIR}/extern/mINI/src
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/
 )
 

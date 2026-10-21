@@ -1,26 +1,31 @@
+#define GLFW_INCLUDE_NONE
+
 #include "screen.hpp"
-#include "opengl.hpp"
+
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+
 #include "error.hpp"
 
 float displayVertices[] = {
-  // positions
-  -1, -1, 0,
-  0,  // Bottom Left
-  -1, 1, 0,
-  1,  // Top Left
-  1, 1, 1,
-  1,  // Top Right
-  1, -1, 1,
-  0  // Bottom Right
+    // clang-format off
+
+    // positions
+    -1, -1, 0, 0,     // Bottom Left
+    -1, 1,  0, 1,     // Top Left
+    1,  1,  1, 1,   // Top Right
+    1,  -1, 1, 0  // Bottom Right
+
+    // clang-format on
 };
 
 unsigned int displayIndices[] = {
-  2, 0, 3,  // Bottom Right
-  2, 1, 0   // Top Left
+    2, 0, 3,  // Bottom Right
+    2, 1, 0   // Top Left
 };
 
 Screen::Screen(unsigned int& renderTexture, int width, int height)
-  : width(width), height(height) {
+    : width(width), height(height) {
   // Framebuffer texture
 
   glGenTextures(1, &renderTexture);
@@ -28,7 +33,7 @@ Screen::Screen(unsigned int& renderTexture, int width, int height)
   glBindTexture(GL_TEXTURE_2D, renderTexture);
 
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
-    GL_UNSIGNED_BYTE, NULL);
+               GL_UNSIGNED_BYTE, NULL);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -41,8 +46,8 @@ Screen::Screen(unsigned int& renderTexture, int width, int height)
 
   glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
-  glFramebufferTexture2D(
-    GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTexture, 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         renderTexture, 0);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     throw VoxelGrapherError("Failed to create framebuffer.");
@@ -60,19 +65,19 @@ Screen::Screen(unsigned int& renderTexture, int width, int height)
   glBindVertexArray(VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(
-    GL_ARRAY_BUFFER, sizeof(displayVertices), displayVertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(displayVertices), displayVertices,
+               GL_STATIC_DRAW);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(displayIndices), displayIndices,
-    GL_STATIC_DRAW);
+               GL_STATIC_DRAW);
 
-  glVertexAttribPointer(
-    0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(0));
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+                        (void*)(0));
   glEnableVertexAttribArray(0);
 
-  glVertexAttribPointer(
-    1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+                        (void*)(2 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
   glBindVertexArray(0);

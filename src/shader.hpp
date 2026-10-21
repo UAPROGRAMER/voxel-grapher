@@ -1,34 +1,36 @@
 #pragma once
 
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
 #include <string>
 
-#include "math.hpp"
 #include "preprocessor.hpp"
 
 const std::string defaultBlockFunc = "return 0;";
 
 const std::string defaultDisplayFunc =  //
-  "switch (lastCoord) {\n"
-  "  case 0:\n"
-  "    return vec4(0, 0, 0, 1);\n"
-  "  case 1:\n"
-  "    return vec4(0.9, 0.2, 0.2,\n"
-  "      min(1, (maxRayLength - dist) * 5));\n"
-  "  case 2:\n"
-  "    return vec4(0.2, 0.9, 0.2,\n"
-  "      min(1, (maxRayLength - dist) * 5));\n"
-  "  case 3:\n"
-  "    return vec4(0.2, 0.2, 0.9,\n"
-  "      min(1, (maxRayLength - dist) * 5));\n"
-  "}";
+    "switch (lastCoord) {\n"
+    "  case 0:\n"
+    "    return vec4(0, 0, 0, 1);\n"
+    "  case 1:\n"
+    "    return vec4(0.9, 0.2, 0.2,\n"
+    "      min(1, (maxRayLength - dist) * 5));\n"
+    "  case 2:\n"
+    "    return vec4(0.2, 0.9, 0.2,\n"
+    "      min(1, (maxRayLength - dist) * 5));\n"
+    "  case 3:\n"
+    "    return vec4(0.2, 0.2, 0.9,\n"
+    "      min(1, (maxRayLength - dist) * 5));\n"
+    "}";
 
 class Shader {
-private:
+ private:
   unsigned int id;
 
-public:
+ public:
   Shader(const std::string& vertPath, const std::string& fragPath,
-    const PreprocArgs& args = {});
+         const PreprocArgs& args = {});
   ~Shader() noexcept;
 
   Shader(const Shader&) = delete;

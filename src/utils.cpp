@@ -1,22 +1,23 @@
 #include "utils.hpp"
-#include "error.hpp"
 
 #include <fstream>
 
+#include "error.hpp"
+
 std::string readFileToString(const std::filesystem::path& path) {
   if (!std::filesystem::exists(path))
-    throw VoxelGrapherError(
-      "Failed to read a file \"" + path.string() + "\" to string. No file.");
+    throw VoxelGrapherError("Failed to read a file \"" + path.string() +
+                            "\" to string. No file.");
 
   if (!std::filesystem::is_regular_file(path))
     throw VoxelGrapherError("Failed to read a file \"" + path.string() +
-      "\" to string. Not a regular file.");
+                            "\" to string. Not a regular file.");
 
   std::ifstream file(path);
 
   if (!file)
     throw VoxelGrapherError("Failed to read a file \"" + path.string() +
-      "\" to string. Failed to open a file.");
+                            "\" to string. Failed to open a file.");
 
   file.seekg(0, std::ios::end);
 
@@ -33,13 +34,14 @@ std::string readFileToString(const std::filesystem::path& path) {
 
 void writeLogFile(const std::string& str) noexcept {
   try {
-    std::ofstream file(
-      "./data/logs/log-" + std::to_string(std::time(nullptr)) + ".log");
+    std::ofstream file("./data/logs/log-" + std::to_string(std::time(nullptr)) +
+                       ".log");
 
     file << str;
 
     file.flush();
-  } catch (...) {}
+  } catch (...) {
+  }
 }
 
 void checkFolder(const std::filesystem::path& path, bool strong) {
@@ -62,23 +64,23 @@ void writeTextFile(const std::filesystem::path& path, const std::string& str) {
 
   if (!file)
     throw VoxelGrapherError("Failed to create a file \"" + path.string() +
-      "\". Failed to open a file.");
+                            "\". Failed to open a file.");
 
   file << str;
 }
 
 void createBmpImage(const std::filesystem::path& path, uint32_t width,
-  uint32_t height, const std::vector<uint8_t>& data) {
+                    uint32_t height, const std::vector<uint8_t>& data) {
   if (((uint64_t)(width) * (uint64_t)(height) * 3 + 54) !=
-    (uint32_t)((uint64_t)(width) * (uint64_t)(height) * 3 + 54))
+      (uint32_t)((uint64_t)(width) * (uint64_t)(height) * 3 + 54))
     throw VoxelGrapherError("Failed to create .bmp image \"" + path.string() +
-      "\". Size is too big.");
+                            "\". Size is too big.");
 
   std::ofstream file(path, std::ios::binary);
 
   if (!file)
     throw VoxelGrapherError("Failed to create .bmp image \"" + path.string() +
-      "\". Failed to open a file.");
+                            "\". Failed to open a file.");
 
   auto writeByte = [&](uint8_t data) -> void {
     file.write(reinterpret_cast<const char*>(&data), sizeof(data));

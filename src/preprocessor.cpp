@@ -1,12 +1,15 @@
 #include "preprocessor.hpp"
 
 PreprocArgs makePreprocArgs(const std::string& blockFunc,
-  const std::string& displayFunc, const std::string& customVariables) {
+                            const std::string& displayFunc,
+                            const std::string& customVariables) {
+  // clang-format off
   return {
     {'b', blockFunc      },
     {'d', displayFunc    },
     {'v', customVariables}
   };
+  // clang-format on
 }
 
 std::string preprocess(const PreprocArgs& args, const std::string& str) {

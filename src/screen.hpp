@@ -1,7 +1,7 @@
 #pragma once
 
 class Screen {
-private:
+ private:
   int width;
   int height;
   unsigned int FBO;
@@ -9,7 +9,7 @@ private:
   unsigned int VBO;
   unsigned int EBO;
 
-public:
+ public:
   Screen(unsigned int& renderTexture, int width, int height);
 
   ~Screen();

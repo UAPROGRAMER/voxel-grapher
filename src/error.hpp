@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string>
 #include <exception>
+#include <string>
 
 class VoxelGrapherError : std::exception {
-public:
+ public:
   std::string msg;
 
   VoxelGrapherError(std::string&& msg);

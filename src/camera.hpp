@@ -1,10 +1,13 @@
 #pragma once
 
-#include "math.hpp"
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
+
 #include "shader.hpp"
 
 class Camera {
-private:
+ private:
   glm::vec3 pos;
   glm::vec3 front;
   float fov;
@@ -18,7 +21,7 @@ private:
   float speed;
   float sensitivity;
 
-public:
+ public:
   Camera(int width, int height);
 
   Camera(const Camera&) = delete;
@@ -45,6 +48,6 @@ public:
   const glm::vec3& getPos() const;
 
   float getYaw() const;
-  
+
   float getPitch() const;
 };

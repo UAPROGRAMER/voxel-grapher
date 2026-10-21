@@ -1,24 +1,28 @@
 #include "voxel_grapher.hpp"
-#include "imgui.hpp"
-#include "error.hpp"
-#include "utils.hpp"
+
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 #include <mini/ini.h>
 
+#include "error.hpp"
+#include "utils.hpp"
+
 VoxelGrapher::VoxelGrapher(GLFWwindow* window, int width, int height)
-  : window(window),
-    width(width),
-    height(height),
-    renderWidth(width),
-    renderHeight(height),
-    cameraMode(false),
-    renderShader("./data/shaders/render.vert", "./data/shaders/render.frag",
-      makePreprocArgs(defaultBlockFunc, defaultDisplayFunc, "")),
-    displayShader("./data/shaders/display.vert", "./data/shaders/display.frag"),
-    screen(renderTexture, width, height),
-    camera(width, height),
-    guiParams(defaultBlockFunc, defaultDisplayFunc, variables),
-    gui(guiParams),
-    variables() {
+    : window(window),
+      width(width),
+      height(height),
+      renderWidth(width),
+      renderHeight(height),
+      cameraMode(false),
+      renderShader("./data/shaders/render.vert", "./data/shaders/render.frag",
+                   makePreprocArgs(defaultBlockFunc, defaultDisplayFunc, "")),
+      displayShader("./data/shaders/display.vert",
+                    "./data/shaders/display.frag"),
+      screen(renderTexture, width, height),
+      camera(width, height),
+      guiParams(defaultBlockFunc, defaultDisplayFunc, variables),
+      gui(guiParams),
+      variables() {
   guiParams.compileFuncs = true;
 }
 
@@ -81,7 +85,8 @@ void VoxelGrapher::process(float time, float delta) {
         camera.setSpeed(250);
       else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         camera.setSpeed(10);
-      else camera.setSpeed(50);
+      else
+        camera.setSpeed(50);
     }
 
     if (!cameraMode) {
@@ -103,7 +108,7 @@ void VoxelGrapher::process(float time, float delta) {
 
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
           guiParams.isLoadShortcut = true;
-        
+
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
           guiParams.isSaveShortcut = true;
       }
@@ -138,8 +143,8 @@ void VoxelGrapher::process(float time, float delta) {
 
       glBindTexture(GL_TEXTURE_2D, renderTexture);
 
-      glGetTexImage(
-        GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, screenshotRGBA.data());
+      glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                    screenshotRGBA.data());
 
       glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -153,8 +158,8 @@ void VoxelGrapher::process(float time, float delta) {
       }
 
       createBmpImage(
-        "./data/screenshots/" + std::to_string(std::time(nullptr)) + ".bmp",
-        renderWidth, renderHeight, screenshotBGR);
+          "./data/screenshots/" + std::to_string(std::time(nullptr)) + ".bmp",
+          renderWidth, renderHeight, screenshotBGR);
     }
   }
 
@@ -174,9 +179,9 @@ void VoxelGrapher::process(float time, float delta) {
         customVariables += variable.toString();
 
       Shader newShader("./data/shaders/render.vert",
-        "./data/shaders/render.frag",
-        makePreprocArgs(
-          guiParams.blockFunc, guiParams.displayFunc, customVariables));
+                       "./data/shaders/render.frag",
+                       makePreprocArgs(guiParams.blockFunc,
+                                       guiParams.displayFunc, customVariables));
 
       renderShader = std::move(newShader);
 
@@ -197,7 +202,7 @@ void VoxelGrapher::process(float time, float delta) {
     glBindTexture(GL_TEXTURE_2D, renderTexture);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, renderWidth, renderHeight, 0,
-      GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+                 GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -226,9 +231,9 @@ void VoxelGrapher::process(float time, float delta) {
     variables.clear();
 
     guiParams.blockFunc =
-      readFileToString("./data/saves/" + guiParams.savefile + "/block.txt");
+        readFileToString("./data/saves/" + guiParams.savefile + "/block.txt");
     guiParams.displayFunc =
-      readFileToString("./data/saves/" + guiParams.savefile + "/display.txt");
+        readFileToString("./data/saves/" + guiParams.savefile + "/display.txt");
 
     mINI::INIFile varsFile("./data/saves/" + guiParams.savefile + "/vars.ini");
 
@@ -237,18 +242,17 @@ void VoxelGrapher::process(float time, float delta) {
     varsFile.read(ini);
 
     for (const auto& variable : ini) {
-      if (variable.first.empty())
-        continue;
+      if (variable.first.empty()) continue;
 
       variables.push_back(Variable(variable.first));
       variables.at(variables.size() - 1).value =
-        std::stof(variable.second.get("value"));
+          std::stof(variable.second.get("value"));
       variables.at(variables.size() - 1).step =
-        std::stof(variable.second.get("step"));
+          std::stof(variable.second.get("step"));
       variables.at(variables.size() - 1).min =
-        std::stof(variable.second.get("min"));
+          std::stof(variable.second.get("min"));
       variables.at(variables.size() - 1).max =
-        std::stof(variable.second.get("max"));
+          std::stof(variable.second.get("max"));
     }
 
     gui.resetFuncs();
@@ -259,10 +263,10 @@ void VoxelGrapher::process(float time, float delta) {
 
     std::filesystem::create_directory("./data/saves/" + guiParams.savefile);
 
-    writeTextFile(
-      "./data/saves/" + guiParams.savefile + "/block.txt", guiParams.blockFunc);
+    writeTextFile("./data/saves/" + guiParams.savefile + "/block.txt",
+                  guiParams.blockFunc);
     writeTextFile("./data/saves/" + guiParams.savefile + "/display.txt",
-      guiParams.displayFunc);
+                  guiParams.displayFunc);
 
     mINI::INIFile varsFile("./data/saves/" + guiParams.savefile + "/vars.ini");
 
@@ -340,7 +344,7 @@ void VoxelGrapher::windowResize(int _width, int _height) {
   glBindTexture(GL_TEXTURE_2D, renderTexture);
 
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, renderWidth, renderHeight, 0, GL_RGBA,
-    GL_UNSIGNED_BYTE, NULL);
+               GL_UNSIGNED_BYTE, NULL);
 
   glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -348,8 +352,8 @@ void VoxelGrapher::windowResize(int _width, int _height) {
 void VoxelGrapher::mouse(double xpos, double ypos) {
   if (ImGui::GetIO().WantCaptureMouse) return;
 
-  camera.mouse(
-    xpos, ypos, glfwGetWindowAttrib(window, GLFW_FOCUSED) && cameraMode);
+  camera.mouse(xpos, ypos,
+               glfwGetWindowAttrib(window, GLFW_FOCUSED) && cameraMode);
 }
 
 void VoxelGrapher::scroll(double xoffset, double yoffset) {

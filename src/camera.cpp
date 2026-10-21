@@ -1,15 +1,15 @@
 #include "camera.hpp"
 
 Camera::Camera(int width, int height)
-  : pos(0, 0, 0),
-    front(0, 0, -1),
-    fov(45),
-    lastX(width / 2.),
-    lastY(height / 2.),
-    yaw(-90),
-    pitch(0),
-    speed(50),
-    sensitivity(0.1) {}
+    : pos(0, 0, 0),
+      front(0, 0, -1),
+      fov(45),
+      lastX(width / 2.),
+      lastY(height / 2.),
+      yaw(-90),
+      pitch(0),
+      speed(50),
+      sensitivity(0.1) {}
 
 void Camera::setSpeed(float newSpeed) { speed = newSpeed; }
 
@@ -24,8 +24,8 @@ void Camera::moveForward(float delta, float dir) {
 }
 
 void Camera::moveSideways(float delta, float dir) {
-  pos +=
-    dir * speed * delta * glm::normalize(glm::cross(front, glm::vec3(0, 1, 0)));
+  pos += dir * speed * delta *
+         glm::normalize(glm::cross(front, glm::vec3(0, 1, 0)));
 }
 
 void Camera::moveUpways(float delta, float dir) {
@@ -72,9 +72,10 @@ void Camera::scroll(double xoffset, double yoffset) {
 void Camera::useUniforms(const Shader& shader) const {
   shader.trySetUniformVec3("cameraFront", front);
   shader.trySetUniformVec3(
-    "cameraRight", glm::normalize(glm::cross(front, glm::vec3(0, 1, 0))));
-  shader.trySetUniformVec3("cameraUp",
-    glm::normalize(glm::cross(glm::cross(front, glm::vec3(0, 1, 0)), front)));
+      "cameraRight", glm::normalize(glm::cross(front, glm::vec3(0, 1, 0))));
+  shader.trySetUniformVec3(
+      "cameraUp",
+      glm::normalize(glm::cross(glm::cross(front, glm::vec3(0, 1, 0)), front)));
   shader.trySetUniformVec3("cameraPos", pos);
   shader.trySetUniformFloat("cameraFov", fov);
 }

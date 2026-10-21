@@ -1,11 +1,16 @@
-#include "opengl.hpp"
-#include "voxel_grapher.hpp"
-#include "utils.hpp"
-#include "error.hpp"
+#define GLFW_INCLUDE_NONE
+
+#include <GLFW/glfw3.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <glad/glad.h>
 #include <stb/stb_image.h>
-#include "imgui.hpp"
 
 #include <optional>
+
+#include "error.hpp"
+#include "utils.hpp"
+#include "voxel_grapher.hpp"
 
 constexpr int defaultWidth = 800;
 constexpr int defaultHeight = 800;
@@ -57,8 +62,8 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
-    glfwWindowHintString(
-      GLFW_WAYLAND_APP_ID, "cc.stanislavyatskiv.voxel-grapher");
+    glfwWindowHintString(GLFW_WAYLAND_APP_ID,
+                         "cc.stanislavyatskiv.voxel-grapher");
 
 // Some apple magic (as always)
 #if defined(__APPLE__) && defined(__MACH__)
@@ -73,8 +78,8 @@ int main() {
 
     // Creating window
 
-    GLFWwindow* window = glfwCreateWindow(
-      defaultWidth, defaultHeight, "Voxel Grapher", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(defaultWidth, defaultHeight,
+                                          "Voxel Grapher", nullptr, nullptr);
 
     if (!window) return 1;
 
@@ -94,14 +99,17 @@ int main() {
     GLFWimage windowIcon[3];
     int nrChannels;
 
-    windowIcon[0].pixels = stbi_load("./data/icons/icon512.png",
-      &(windowIcon[0].width), &(windowIcon[0].height), &nrChannels, 0);
+    windowIcon[0].pixels =
+        stbi_load("./data/icons/icon512.png", &(windowIcon[0].width),
+                  &(windowIcon[0].height), &nrChannels, 0);
 
-    windowIcon[1].pixels = stbi_load("./data/icons/icon256.png",
-      &(windowIcon[1].width), &(windowIcon[1].height), &nrChannels, 0);
+    windowIcon[1].pixels =
+        stbi_load("./data/icons/icon256.png", &(windowIcon[1].width),
+                  &(windowIcon[1].height), &nrChannels, 0);
 
-    windowIcon[2].pixels = stbi_load("./data/icons/icon128.png",
-      &(windowIcon[2].width), &(windowIcon[2].height), &nrChannels, 0);
+    windowIcon[2].pixels =
+        stbi_load("./data/icons/icon128.png", &(windowIcon[2].width),
+                  &(windowIcon[2].height), &nrChannels, 0);
 
     glfwSetWindowIcon(window, 3, windowIcon);
 
@@ -167,8 +175,8 @@ int main() {
 
 #include <windows.h>
 
-int APIENTRY WinMain(
-  HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+                     LPSTR lpCmdLine, int nCmdShow) {
   return main();
 }
 

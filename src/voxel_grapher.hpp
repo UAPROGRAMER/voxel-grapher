@@ -1,14 +1,18 @@
 #pragma once
 
-#include "opengl.hpp"
-#include "shader.hpp"
-#include "screen.hpp"
+#define GLFW_INCLUDE_NONE
+
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+
 #include "camera.hpp"
 #include "gui.hpp"
+#include "screen.hpp"
+#include "shader.hpp"
 #include "variable.hpp"
 
 class VoxelGrapher {
-private:
+ private:
   GLFWwindow* window;
   int width;
   int height;
@@ -32,7 +36,7 @@ private:
 
   void draw(float time, float delta) const;
 
-public:
+ public:
   VoxelGrapher(GLFWwindow* window, int width, int height);
 
   VoxelGrapher(const VoxelGrapher&) = delete;

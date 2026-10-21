@@ -41,11 +41,11 @@ struct GUIparams {
   bool isSaveShortcut = false;
 
   GUIparams(const std::string& blockFunc, const std::string& displayFunc,
-    std::vector<Variable>& variables);
+            std::vector<Variable>& variables);
 };
 
 class GUI {
-private:
+ private:
   GUIparams& params;
 
   bool isHelpWindow = false;
@@ -97,7 +97,7 @@ private:
 
   void changeVariablePopup();
 
-public:
+ public:
   GUI(GUIparams& params);
 
   GUI(const GUI&) = delete;

@@ -1,10 +1,15 @@
+#define GLFW_INCLUDE_NONE
+
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+
 #include "shader.hpp"
-#include "opengl.hpp"
-#include "utils.hpp"
+
 #include "error.hpp"
+#include "utils.hpp"
 
 Shader::Shader(const std::string& vertPath, const std::string& fragPath,
-  const PreprocArgs& args) {
+               const PreprocArgs& args) {
   std::string vert = readFileToString(vertPath);
   std::string frag = readFileToString(fragPath);
 
@@ -26,8 +31,8 @@ Shader::Shader(const std::string& vertPath, const std::string& fragPath,
 
   if (!success) {
     glGetShaderInfoLog(vertShader, 512, nullptr, infoLog);
-    throw VoxelGrapherError(
-      "Failed to compile vertex shader: " + std::string(infoLog));
+    throw VoxelGrapherError("Failed to compile vertex shader: " +
+                            std::string(infoLog));
   }
 
   // Fragment
@@ -43,8 +48,8 @@ Shader::Shader(const std::string& vertPath, const std::string& fragPath,
 
   if (!success) {
     glGetShaderInfoLog(fragShader, 512, nullptr, infoLog);
-    throw VoxelGrapherError(
-      "Failed to compile fragment shader: " + std::string(infoLog));
+    throw VoxelGrapherError("Failed to compile fragment shader: " +
+                            std::string(infoLog));
   }
 
   // Program
@@ -60,8 +65,8 @@ Shader::Shader(const std::string& vertPath, const std::string& fragPath,
 
   if (!success) {
     glGetProgramInfoLog(program, 512, nullptr, infoLog);
-    throw VoxelGrapherError(
-      "Failed to link shader program: " + std::string(infoLog));
+    throw VoxelGrapherError("Failed to link shader program: " +
+                            std::string(infoLog));
   }
 
   glDeleteShader(vertShader);
@@ -136,7 +141,8 @@ void Shader::trySetUniformFloat(const std::string& name, float v) const {
   glUniform1f(location, v);
 }
 
-void Shader::trySetUniformVec3(const std::string& name, const glm::vec3& v) const {
+void Shader::trySetUniformVec3(const std::string& name,
+                               const glm::vec3& v) const {
   use();
 
   int location = glGetUniformLocation(id, name.c_str());

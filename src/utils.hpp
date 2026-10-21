@@ -1,8 +1,7 @@
 #pragma once
 
-#include <string>
 #include <filesystem>
-#include <cinttypes>
+#include <string>
 #include <vector>
 
 std::string readFileToString(const std::filesystem::path& path);
@@ -15,7 +14,7 @@ void checkFile(const std::filesystem::path& path);
 
 void writeTextFile(const std::filesystem::path& path, const std::string& str);
 
-void createBmpImage(const std::filesystem::path& path,
-  uint32_t width, uint32_t height, const std::vector<uint8_t>& data);
+void createBmpImage(const std::filesystem::path& path, uint32_t width,
+                    uint32_t height, const std::vector<uint8_t>& data);
 
 bool isValidId(const std::string& str);
