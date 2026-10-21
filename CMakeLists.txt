@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 4.0)
 project(voxel-grapher-project LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -51,17 +51,19 @@ file(GLOB source CONFIGURE_DEPENDS
 find_package(OpenGL REQUIRED)
 
 if(WIN32)
-  add_executable(voxel-grapher WIN32 ${glad} ${source}
-    ${imgui} voxel-grapher.rc)
-  target_link_libraries(voxel-grapher glfw OpenGL::GL mINI)
+  add_executable(voxel-grapher WIN32 ${glad} ${source} ${imgui} voxel-grapher.rc)
   target_link_options(voxel-grapher PRIVATE "-static")
 elseif(UNIX AND NOT APPLE)
   add_executable(voxel-grapher ${glad} ${source} ${imgui})
-  target_link_libraries(voxel-grapher glfw OpenGL::GL dl pthread mINI::mINI)
+  target_link_libraries(voxel-grapher dl pthread)
   target_link_options(
     voxel-grapher PRIVATE "-static-libgcc" "-static-libstdc++"
   )
 endif()
+
+target_link_libraries(voxel-grapher
+  glfw OpenGL::GL mINI
+)
 
 target_include_directories(voxel-grapher PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/extern/glad/include
