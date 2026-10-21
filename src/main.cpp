@@ -57,7 +57,8 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_FOCUSED, GLFW_FALSE);
-    glfwWindowHintString(GLFW_WAYLAND_APP_ID, "cc.stanislavyatskiv.voxel-grapher");
+    glfwWindowHintString(
+      GLFW_WAYLAND_APP_ID, "cc.stanislavyatskiv.voxel-grapher");
 
 // Some apple magic (as always)
 #if defined(__APPLE__) && defined(__MACH__)
@@ -72,8 +73,8 @@ int main() {
 
     // Creating window
 
-    GLFWwindow* window = glfwCreateWindow(defaultWidth, defaultHeight,
-      "Voxel Grapher", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(
+      defaultWidth, defaultHeight, "Voxel Grapher", nullptr, nullptr);
 
     if (!window) return 1;
 
@@ -161,3 +162,14 @@ int main() {
 
   return 0;
 }
+
+#ifdef _WIN32
+
+#include <windows.h>
+
+int APIENTRY WinMain(
+  HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+  return main();
+}
+
+#endif

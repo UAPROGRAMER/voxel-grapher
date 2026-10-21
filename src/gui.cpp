@@ -94,8 +94,7 @@ void GUI::paramWindow() {
     ImGui::DragFloat(
       "Max Ray Length", &params.maxRayLength, 1, 10, 1000, "%.0f");
 
-    if (ImGui::DragFloat(
-          "Render Scale", &renderScale, 0.005, 0.2, 2, "%.1f")) {
+    if (ImGui::DragFloat("Render Scale", &renderScale, 0.005, 0.2, 2, "%.1f")) {
       params.renderScale = round(renderScale * 10) / 10;
       params.isRenderScaleChanged = true;
     }
@@ -130,7 +129,7 @@ void GUI::functionWindow() {
       ImVec2(ImGui::GetTextLineHeight() * 32, ImGui::GetTextLineHeight() * 14));
 
     if (params.isFuncError)
-      ImGui::TextColored(ImVec4(1, 0, 0, 1), params.funcError.c_str());
+      ImGui::TextColored(ImVec4(1, 0, 0, 1), "%s", params.funcError.c_str());
 
     if (ImGui::Button("Reset")) params.resetFuncs = true;
 
