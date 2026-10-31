@@ -1,16 +1,13 @@
 #include "gui.hpp"
 
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
-
 #include <algorithm>
 #include <filesystem>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <string>
 
+#include "graphics/glm.hpp"
+#include "graphics/imgui.hpp"
 #include "utils.hpp"
+
 
 GUIparams::GUIparams(const std::string& blockFunc,
                      const std::string& displayFunc,

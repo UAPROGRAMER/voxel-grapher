@@ -1,14 +1,10 @@
-#define GLFW_INCLUDE_NONE
-
-#include <GLFW/glfw3.h>
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
-#include <glad/glad.h>
 #include <stb/stb_image.h>
 
 #include <optional>
 
 #include "error.hpp"
+#include "graphics/imgui.hpp"
+#include "graphics/opengl.hpp"
 #include "utils.hpp"
 #include "voxel_grapher.hpp"
 

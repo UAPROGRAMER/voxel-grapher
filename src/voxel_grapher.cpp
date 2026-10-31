@@ -1,11 +1,28 @@
 #include "voxel_grapher.hpp"
 
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
 #include <mini/ini.h>
 
 #include "error.hpp"
+#include "graphics/imgui.hpp"
+#include "preprocessor.hpp"
 #include "utils.hpp"
+
+const std::string defaultBlockFunc = "return 0;";
+
+const std::string defaultDisplayFunc =  //
+    "switch (lastCoord) {\n"
+    "  case 0:\n"
+    "    return vec4(0, 0, 0, 1);\n"
+    "  case 1:\n"
+    "    return vec4(0.9, 0.2, 0.2,\n"
+    "      min(1, (maxRayLength - dist) * 5));\n"
+    "  case 2:\n"
+    "    return vec4(0.2, 0.9, 0.2,\n"
+    "      min(1, (maxRayLength - dist) * 5));\n"
+    "  case 3:\n"
+    "    return vec4(0.2, 0.2, 0.9,\n"
+    "      min(1, (maxRayLength - dist) * 5));\n"
+    "}";
 
 VoxelGrapher::VoxelGrapher(GLFWwindow* window, int width, int height)
     : window(window),
@@ -14,11 +31,14 @@ VoxelGrapher::VoxelGrapher(GLFWwindow* window, int width, int height)
       renderWidth(width),
       renderHeight(height),
       cameraMode(false),
-      renderShader("./data/shaders/render.vert", "./data/shaders/render.frag",
-                   makePreprocArgs(defaultBlockFunc, defaultDisplayFunc, "")),
-      displayShader("./data/shaders/display.vert",
-                    "./data/shaders/display.frag"),
-      screen(renderTexture, width, height),
+      cameraSpeed(50),
+      renderShader(
+          readFileToString("./data/shaders/render.vert"),
+          preprocess(makePreprocArgs(defaultBlockFunc, defaultDisplayFunc, ""),
+                     readFileToString("./data/shaders/render.frag"))),
+      displayShader(readFileToString("./data/shaders/display.vert"),
+                    readFileToString("./data/shaders/display.frag")),
+      screen(width, height, width, height),
       camera(width, height),
       guiParams(defaultBlockFunc, defaultDisplayFunc, variables),
       gui(guiParams),
@@ -64,29 +84,29 @@ void VoxelGrapher::process(float time, float delta) {
 
     if (cameraMode) {
       if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.moveForward(delta, 1);
+        camera.moveForward(delta * cameraSpeed);
 
       if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.moveForward(delta, -1);
+        camera.moveForward(delta * -cameraSpeed);
 
       if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.moveSideways(delta, 1);
+        camera.moveRight(delta * cameraSpeed);
 
       if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.moveSideways(delta, -1);
+        camera.moveRight(delta * -cameraSpeed);
 
       if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-        camera.moveUpways(delta, 1);
+        camera.moveUp(delta * cameraSpeed);
 
       if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-        camera.moveUpways(delta, -1);
+        camera.moveUp(delta * -cameraSpeed);
 
       if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-        camera.setSpeed(250);
+        cameraSpeed = 250;
       else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        camera.setSpeed(10);
+        cameraSpeed = 10;
       else
-        camera.setSpeed(50);
+        cameraSpeed = 50;
     }
 
     if (!cameraMode) {
@@ -138,28 +158,9 @@ void VoxelGrapher::process(float time, float delta) {
     if (lastScreenshotTime + 2 <= time) {
       lastScreenshotTime = time;
 
-      std::vector<uint8_t> screenshotRGBA;
-      screenshotRGBA.resize(renderWidth * renderHeight * 4ull);
-
-      glBindTexture(GL_TEXTURE_2D, renderTexture);
-
-      glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                    screenshotRGBA.data());
-
-      glBindTexture(GL_TEXTURE_2D, 0);
-
-      std::vector<uint8_t> screenshotBGR;
-      screenshotBGR.resize(renderWidth * renderHeight * 3);
-
-      for (size_t i = 0; i < renderWidth * renderHeight; i++) {
-        screenshotBGR.at(i * 3) = screenshotRGBA.at(i * 4 + 2);
-        screenshotBGR.at(i * 3 + 1) = screenshotRGBA.at(i * 4 + 1);
-        screenshotBGR.at(i * 3 + 2) = screenshotRGBA.at(i * 4);
-      }
-
       createBmpImage(
           "./data/screenshots/" + std::to_string(std::time(nullptr)) + ".bmp",
-          renderWidth, renderHeight, screenshotBGR);
+          renderWidth, renderHeight, screen.getPixels());
     }
   }
 
@@ -178,10 +179,11 @@ void VoxelGrapher::process(float time, float delta) {
       for (const auto& variable : variables)
         customVariables += variable.toString();
 
-      Shader newShader("./data/shaders/render.vert",
-                       "./data/shaders/render.frag",
-                       makePreprocArgs(guiParams.blockFunc,
-                                       guiParams.displayFunc, customVariables));
+      Shader newShader(
+          readFileToString("./data/shaders/render.vert"),
+          preprocess(makePreprocArgs(guiParams.blockFunc, guiParams.displayFunc,
+                                     customVariables),
+                     readFileToString("./data/shaders/render.frag")));
 
       renderShader = std::move(newShader);
 
@@ -199,28 +201,16 @@ void VoxelGrapher::process(float time, float delta) {
     renderWidth = (int)(width * guiParams.renderScale);
     renderHeight = (int)(height * guiParams.renderScale);
 
-    glBindTexture(GL_TEXTURE_2D, renderTexture);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, renderWidth, renderHeight, 0,
-                 GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
+    screen.changeSize(renderWidth, renderHeight, width, height);
 
     guiParams.isRenderScaleChanged = false;
   }
 
   if (guiParams.interpolationChanged) {
-    glBindTexture(GL_TEXTURE_2D, renderTexture);
-
-    if (guiParams.interpolateRender) {
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    } else {
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    }
-
-    glBindTexture(GL_TEXTURE_2D, 0);
+    if (guiParams.interpolateRender)
+      screen.setFilterLinear();
+    else
+      screen.setFilterNearest();
 
     guiParams.interpolationChanged = false;
   }
@@ -297,8 +287,6 @@ void VoxelGrapher::process(float time, float delta) {
 }
 
 void VoxelGrapher::draw(float time, float delta) const {
-  glViewport(0, 0, width, height);
-
   glClearColor(1, 1, 1, 1);
   glClear(GL_COLOR_BUFFER_BIT);
 
@@ -306,28 +294,25 @@ void VoxelGrapher::draw(float time, float delta) const {
 
   renderShader.trySetUniformInt("width", width);
   renderShader.trySetUniformInt("height", height);
-  camera.useUniforms(renderShader);
+
+  renderShader.trySetUniformVec3("cameraFront", camera.getFront());
+  renderShader.trySetUniformVec3("cameraRight", camera.getRight());
+  renderShader.trySetUniformVec3("cameraUp", camera.getUp());
+  renderShader.trySetUniformVec3("cameraPos", camera.getPos());
+  renderShader.trySetUniformFloat("cameraFov", camera.getFov());
+
   renderShader.trySetUniformFloat("maxRayLength", guiParams.maxRayLength);
   renderShader.trySetUniformFloat("t", time);
 
   for (const auto& variable : variables)
     renderShader.trySetUniformFloat(variable.name, variable.value);
 
-  glViewport(0, 0, renderWidth, renderHeight);
-
   screen.render();
-
-  glViewport(0, 0, width, height);
 
   displayShader.use();
 
-  glBindTexture(GL_TEXTURE_2D, renderTexture);
-
   screen.draw();
 
-  glBindTexture(GL_TEXTURE_2D, 0);
-
-  glBindVertexArray(0);
   glUseProgram(0);
 
   gui.draw(time, delta);
@@ -341,12 +326,7 @@ void VoxelGrapher::windowResize(int _width, int _height) {
 
   glViewport(0, 0, width, height);
 
-  glBindTexture(GL_TEXTURE_2D, renderTexture);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, renderWidth, renderHeight, 0, GL_RGBA,
-               GL_UNSIGNED_BYTE, NULL);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
+  screen.changeSize(renderWidth, renderHeight, width, height);
 }
 
 void VoxelGrapher::mouse(double xpos, double ypos) {
@@ -357,5 +337,7 @@ void VoxelGrapher::mouse(double xpos, double ypos) {
 }
 
 void VoxelGrapher::scroll(double xoffset, double yoffset) {
-  if (cameraMode) camera.scroll(xoffset, yoffset);
+  if (cameraMode)
+    camera.setFov(
+        std::max(std::min(camera.getFov() - (float)yoffset * 2, 120.f), 5.f));
 }

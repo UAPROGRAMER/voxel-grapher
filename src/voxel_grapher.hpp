@@ -1,14 +1,10 @@
 #pragma once
 
-#define GLFW_INCLUDE_NONE
-
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
-
-#include "camera.hpp"
+#include "graphics/camera.hpp"
+#include "graphics/opengl.hpp"
+#include "graphics/screen.hpp"
+#include "graphics/shader.hpp"
 #include "gui.hpp"
-#include "screen.hpp"
-#include "shader.hpp"
 #include "variable.hpp"
 
 class VoxelGrapher {
@@ -20,6 +16,7 @@ class VoxelGrapher {
   int renderHeight;
 
   bool cameraMode;
+  float cameraSpeed;
 
   Shader renderShader;
   Shader displayShader;
@@ -29,7 +26,6 @@ class VoxelGrapher {
   GUI gui;
   std::vector<Variable> variables;
 
-  unsigned int renderTexture;
   float lastScreenshotTime = 0;
 
   void process(float time, float delta);

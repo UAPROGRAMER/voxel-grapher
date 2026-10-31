@@ -48,6 +48,7 @@ add_subdirectory(extern/mINI)
 
 file(GLOB source CONFIGURE_DEPENDS
   ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/graphics/*.cpp
 )
 
 # EXECUTABLE
