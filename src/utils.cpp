@@ -1,23 +1,28 @@
 #include "utils.hpp"
 
+#include <filesystem>
+#include <format>
 #include <fstream>
+#include <stdexcept>
+#include <string_view>
 
-#include "error.hpp"
+#include "common/logs.hpp"
 
-std::string readFileToString(const std::filesystem::path& path) {
+std::string readFileToString(std::string_view path) {
   if (!std::filesystem::exists(path))
-    throw VoxelGrapherError("Failed to read a file \"" + path.string() +
-                            "\" to string. No file.");
+    makeLog(LogType::ERROR,
+            std::format("[Utils]: Failed to read file: {}. File doesn't exist.",
+                        path));
 
   if (!std::filesystem::is_regular_file(path))
-    throw VoxelGrapherError("Failed to read a file \"" + path.string() +
-                            "\" to string. Not a regular file.");
+    makeLog(LogType::ERROR,
+            std::format("[Utils]: Failed to read file: {}. Not a file.", path));
 
-  std::ifstream file(path);
+  std::ifstream file((std::filesystem::path(path)));
 
   if (!file)
-    throw VoxelGrapherError("Failed to read a file \"" + path.string() +
-                            "\" to string. Failed to open a file.");
+    makeLog(LogType::ERROR,
+            std::format("[Utils]: Failed to open file: {}.", path));
 
   file.seekg(0, std::ios::end);
 
@@ -32,55 +37,51 @@ std::string readFileToString(const std::filesystem::path& path) {
   return text;
 }
 
-void writeLogFile(const std::string& str) noexcept {
-  try {
-    std::ofstream file("./data/logs/log-" + std::to_string(std::time(nullptr)) +
-                       ".log");
-
-    file << str;
-
-    file.flush();
-  } catch (...) {
-  }
-}
-
-void checkFolder(const std::filesystem::path& path, bool strong) {
+void checkFolder(std::string_view path, bool strong) {
   if (!std::filesystem::exists(path)) {
     if (strong)
-      throw VoxelGrapherError("\"" + path.string() + "\" folder is required.");
+      makeLog(LogType::ERROR,
+              std::format("[Utils]: Expected folder: {}.", path));
 
     std::filesystem::create_directories(path);
   } else if (std::filesystem::is_regular_file(path))
-    throw VoxelGrapherError("\"" + path.string() + "\" must be a folder.");
+    makeLog(LogType::ERROR,
+            std::format("[Utils]: Expected folder: {}. Found file.", path));
 }
 
-void checkFile(const std::filesystem::path& path) {
+void checkFile(std::string_view path) {
   if (!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path))
-    throw VoxelGrapherError("\"" + path.string() + "\" is required.");
+    makeLog(LogType::ERROR, std::format("[Utils]: Expected file {}.", path));
 }
 
-void writeTextFile(const std::filesystem::path& path, const std::string& str) {
-  std::ofstream file(path);
+void writeTextFile(std::string_view path, std::string_view str) {
+  std::ofstream file((std::filesystem::path(path)));
 
   if (!file)
-    throw VoxelGrapherError("Failed to create a file \"" + path.string() +
-                            "\". Failed to open a file.");
+    makeLog(LogType::ERROR,
+            std::format("[Utils]: Failed to write txt file: {}.", path));
 
   file << str;
+
+  file.flush();
 }
 
-void createBmpImage(const std::filesystem::path& path, uint32_t width,
-                    uint32_t height, const std::vector<uint8_t>& data) {
+void createBmpImage(std::string_view path, uint32_t width, uint32_t height,
+                    const std::vector<uint8_t>& data) {
   if (((uint64_t)(width) * (uint64_t)(height) * 3 + 54) !=
       (uint32_t)((uint64_t)(width) * (uint64_t)(height) * 3 + 54))
-    throw VoxelGrapherError("Failed to create .bmp image \"" + path.string() +
-                            "\". Size is too big.");
+    makeLog(LogType::ERROR,
+            std::format(
+                "[Utils]: Failed to create bmp image: {}. Image is too big.",
+                path));
 
-  std::ofstream file(path, std::ios::binary);
+  std::ofstream file((std::filesystem::path(path)), std::ios::binary);
 
   if (!file)
-    throw VoxelGrapherError("Failed to create .bmp image \"" + path.string() +
-                            "\". Failed to open a file.");
+    makeLog(LogType::ERROR,
+            std::format(
+                "[Utils]: Failed to create bmp image: {}. Failed to open file.",
+                path));
 
   auto writeByte = [&](uint8_t data) -> void {
     file.write(reinterpret_cast<const char*>(&data), sizeof(data));
@@ -138,7 +139,7 @@ void createBmpImage(const std::filesystem::path& path, uint32_t width,
   }
 }
 
-bool isValidId(const std::string& str) {
+bool isValidId(std::string_view str) {
   if (str.empty()) return false;
 
   if (!isalpha(str.at(0))) return false;

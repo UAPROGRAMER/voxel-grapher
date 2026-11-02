@@ -2,7 +2,6 @@
 
 #include <optional>
 
-#include "error.hpp"
 #include "graphics/imgui.hpp"
 #include "graphics/opengl.hpp"
 #include "utils.hpp"
@@ -153,15 +152,10 @@ int main() {
 
     glfwDestroyWindow(window);
     glfwTerminate();
-  } catch (const VoxelGrapherError& e) {
-    writeLogFile(e.msg);
-    return 1;
   } catch (const std::exception& e) {
-    writeLogFile(e.what());
-    return 2;
+    return 1;
   } catch (...) {
-    writeLogFile("Unexpected error.");
-    return 3;
+    return 1;
   }
 
   return 0;

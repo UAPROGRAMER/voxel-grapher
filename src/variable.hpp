@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 
 struct Variable {
   std::string name;
@@ -9,7 +10,15 @@ struct Variable {
   float step = 0.01;
   float value = 0;
 
-  Variable(const std::string& name);
+  Variable(std::string_view name);
+
+  Variable(std::string&& name);
+
+  Variable(const Variable&) = delete;
+  Variable& operator=(const Variable&) = delete;
+
+  Variable(Variable&& other) noexcept;
+  Variable& operator=(Variable&& other) noexcept;
 
   std::string toString() const;
 };

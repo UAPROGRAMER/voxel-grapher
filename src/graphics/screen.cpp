@@ -1,6 +1,10 @@
 #include "screen.hpp"
 
+#include <stdexcept>
+
 #include "opengl.hpp"
+
+#include "../common/logs.hpp"
 
 float displayVertices[] = {
     // clang-format off
@@ -44,7 +48,7 @@ Screen::Screen(int _renWidth, int _renHeight, int _realWidth, int _realHeight)
                          texture, 0);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    throw 999;
+    makeLog(LogType::ERROR, "[Screen]: Failed to create framebuffer.");
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

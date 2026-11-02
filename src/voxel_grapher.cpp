@@ -2,10 +2,14 @@
 
 #include <mini/ini.h>
 
-#include "error.hpp"
+#include <exception>
+#include <format>
+
+#include "GLFW/glfw3.h"
 #include "graphics/imgui.hpp"
 #include "preprocessor.hpp"
 #include "utils.hpp"
+
 
 const std::string defaultBlockFunc = "return 0;";
 
@@ -81,6 +85,8 @@ void VoxelGrapher::process(float time, float delta) {
 
     if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS)
       guiParams.screenshot = true;
+
+    
 
     if (cameraMode) {
       if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -188,10 +194,10 @@ void VoxelGrapher::process(float time, float delta) {
       renderShader = std::move(newShader);
 
       guiParams.isFuncError = false;
-    } catch (const VoxelGrapherError& e) {
+    } catch (const std::exception& e) {
       guiParams.isFuncError = true;
 
-      guiParams.funcError = "Error: " + e.msg;
+      guiParams.funcError = std::format("Error: {}", e.what());
     }
 
     guiParams.compileFuncs = false;

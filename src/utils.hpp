@@ -1,20 +1,18 @@
 #pragma once
 
-#include <filesystem>
 #include <string>
+#include <string_view>
 #include <vector>
 
-std::string readFileToString(const std::filesystem::path& path);
+std::string readFileToString(std::string_view path);
 
-void writeLogFile(const std::string& str) noexcept;
+void checkFolder(std::string_view path, bool strong);
 
-void checkFolder(const std::filesystem::path& path, bool strong);
+void checkFile(std::string_view path);
 
-void checkFile(const std::filesystem::path& path);
+void writeTextFile(std::string_view path, std::string_view str);
 
-void writeTextFile(const std::filesystem::path& path, const std::string& str);
+void createBmpImage(std::string_view path, uint32_t width, uint32_t height,
+                    const std::vector<uint8_t>& data);
 
-void createBmpImage(const std::filesystem::path& path, uint32_t width,
-                    uint32_t height, const std::vector<uint8_t>& data);
-
-bool isValidId(const std::string& str);
+bool isValidId(std::string_view str);

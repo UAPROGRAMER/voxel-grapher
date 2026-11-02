@@ -1,7 +1,10 @@
 #include "shader.hpp"
 
-#include "opengl.hpp"
+#include <format>
+#include <stdexcept>
 
+#include "../common/logs.hpp"
+#include "opengl.hpp"
 
 Shader::Shader(std::string vert, std::string frag) {
   int success;
@@ -20,7 +23,9 @@ Shader::Shader(std::string vert, std::string frag) {
 
   if (!success) {
     glGetShaderInfoLog(vertShader, 512, nullptr, infoLog);
-    throw 999;
+    makeLog(
+        LogType::ERROR,
+        std::format("[Shader]: Failed to compile vertex shader: {}", infoLog));
   }
 
   // Fragment
@@ -36,7 +41,9 @@ Shader::Shader(std::string vert, std::string frag) {
 
   if (!success) {
     glGetShaderInfoLog(fragShader, 512, nullptr, infoLog);
-    throw 999;
+    makeLog(LogType::ERROR,
+            std::format("[Shader]: Failed to compile fragment shader: {}",
+                        infoLog));
   }
 
   // Program
@@ -52,7 +59,8 @@ Shader::Shader(std::string vert, std::string frag) {
 
   if (!success) {
     glGetProgramInfoLog(program, 512, nullptr, infoLog);
-    throw 999;
+    makeLog(LogType::ERROR,
+            std::format("[Shader]: Failed to link shader program."));
   }
 
   glDeleteShader(vertShader);
@@ -83,7 +91,9 @@ int Shader::getUniformLocation(const std::string& name) const {
 
   int location = glGetUniformLocation(id, name.c_str());
 
-  if (location == -1) throw 999;
+  if (location == -1)
+    makeLog(LogType::ERROR,
+            std::format("[Shader]: Failed to get uniform location: {}.", name));
 
   return location;
 }
