@@ -10,10 +10,16 @@
 class VoxelGrapher {
  private:
   GLFWwindow* window;
+  int windowed_width;
+  int windowed_height;
   int width;
   int height;
+  int posX;
+  int posY;
   int renderWidth;
   int renderHeight;
+  bool fullscreen;
+  float lastFullscreenTime = 0;
 
   bool cameraMode;
   float cameraSpeed;

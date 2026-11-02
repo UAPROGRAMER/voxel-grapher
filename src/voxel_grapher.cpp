@@ -10,7 +10,6 @@
 #include "preprocessor.hpp"
 #include "utils.hpp"
 
-
 const std::string defaultBlockFunc = "return 0;";
 
 const std::string defaultDisplayFunc =  //
@@ -30,10 +29,15 @@ const std::string defaultDisplayFunc =  //
 
 VoxelGrapher::VoxelGrapher(GLFWwindow* window, int width, int height)
     : window(window),
+      windowed_width(0),
+      windowed_height(0),
       width(width),
       height(height),
+      posX(0),
+      posY(0),
       renderWidth(width),
       renderHeight(height),
+      fullscreen(false),
       cameraMode(false),
       cameraSpeed(50),
       renderShader(
@@ -48,6 +52,8 @@ VoxelGrapher::VoxelGrapher(GLFWwindow* window, int width, int height)
       gui(guiParams),
       variables() {
   guiParams.compileFuncs = true;
+  glfwGetWindowSize(window, &width, &height);
+  glfwGetWindowPos(window, &posX, &posY);
 }
 
 void VoxelGrapher::run() {
@@ -86,7 +92,37 @@ void VoxelGrapher::process(float time, float delta) {
     if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS)
       guiParams.screenshot = true;
 
-    
+    if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_PRESS)
+      glfwSetWindowShouldClose(window, true);
+
+    if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS &&
+        lastFullscreenTime + 0.5 <= time) {
+      if (fullscreen) {
+        glfwSetWindowMonitor(window, nullptr, posX, posY, windowed_width,
+                             windowed_height, GLFW_DONT_CARE);
+
+        windowResize(height, width);
+
+        fullscreen = false;
+      } else {
+        glfwGetWindowSize(window, &width, &height);
+        glfwGetWindowPos(window, &posX, &posY);
+
+        windowed_width = width;
+        windowed_height = height;
+
+        const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+        glfwSetWindowMonitor(window, glfwGetPrimaryMonitor(), 0, 0, mode->width,
+                             mode->height, mode->refreshRate);
+
+        windowResize(mode->width, mode->height);
+
+        fullscreen = true;
+      }
+
+      lastFullscreenTime = time;
+    }
 
     if (cameraMode) {
       if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
