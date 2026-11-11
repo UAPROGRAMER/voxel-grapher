@@ -42,9 +42,9 @@ int main() {
     checkFile("./data/shaders/display.vert");
     checkFile("./data/shaders/display.frag");
 
-    checkFile("./data/icons/icon512.png");
-    checkFile("./data/icons/icon256.png");
-    checkFile("./data/icons/icon128.png");
+    checkFile("./data/icons/icon-512.png");
+    checkFile("./data/icons/icon-256.png");
+    checkFile("./data/icons/icon-128.png");
     checkFile("./data/icons/icon.ico");
 
     // Glfw init
@@ -95,15 +95,15 @@ int main() {
     int nrChannels;
 
     windowIcon[0].pixels =
-        stbi_load("./data/icons/icon512.png", &(windowIcon[0].width),
+        stbi_load("./data/icons/icon-512.png", &(windowIcon[0].width),
                   &(windowIcon[0].height), &nrChannels, 0);
 
     windowIcon[1].pixels =
-        stbi_load("./data/icons/icon256.png", &(windowIcon[1].width),
+        stbi_load("./data/icons/icon-256.png", &(windowIcon[1].width),
                   &(windowIcon[1].height), &nrChannels, 0);
 
     windowIcon[2].pixels =
-        stbi_load("./data/icons/icon128.png", &(windowIcon[2].width),
+        stbi_load("./data/icons/icon-128.png", &(windowIcon[2].width),
                   &(windowIcon[2].height), &nrChannels, 0);
 
     glfwSetWindowIcon(window, 3, windowIcon);
