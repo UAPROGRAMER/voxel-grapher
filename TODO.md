@@ -2,15 +2,15 @@
 
 - remake GUI bus system
 - put variable limit
-- change formating
-- do profiling and find slow parts
-- add good logging
-- add vector based icon
+- add good logging +-
+- add ability to change GUI color theme
 
 - add release page to the site
 
 ## FINISHED
 
+- change formating
+- add vector based icon
 - add no ai code policy
 - add vsync
 - change extern libraries to use git submodules
