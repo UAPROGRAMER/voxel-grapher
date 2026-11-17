@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "graphics/camera.hpp"
 #include "graphics/opengl.hpp"
 #include "graphics/screen.hpp"
@@ -28,11 +29,17 @@ class VoxelGrapher {
   Shader displayShader;
   Screen screen;
   Camera camera;
-  GUIparams guiParams;
   GUI gui;
   std::vector<Variable> variables;
 
   float lastScreenshotTime = 0;
+  bool screenshot = false;
+  float maxRayLength = 40;
+  float renderScale = 1;
+  bool interpolation = false;
+
+  bool lastError = false;
+  std::string lastErrorText = "";
 
   void process(float time, float delta);
 

@@ -7,8 +7,11 @@
 
 #include "GLFW/glfw3.h"
 #include "graphics/imgui.hpp"
+#include "gui.hpp"
 #include "preprocessor.hpp"
 #include "utils.hpp"
+
+constexpr std::size_t MAX_VARIABLES = 256;
 
 const std::string defaultBlockFunc = "return 0;";
 
@@ -48,10 +51,8 @@ VoxelGrapher::VoxelGrapher(GLFWwindow* window, int width, int height)
                     readFileToString("./data/shaders/display.frag")),
       screen(width, height, width, height),
       camera(width, height),
-      guiParams(defaultBlockFunc, defaultDisplayFunc, variables),
-      gui(guiParams),
+      gui(defaultBlockFunc, defaultDisplayFunc),
       variables() {
-  guiParams.compileFuncs = true;
   glfwGetWindowSize(window, &width, &height);
   glfwGetWindowPos(window, &posX, &posY);
 }
@@ -76,6 +77,8 @@ void VoxelGrapher::run() {
 }
 
 void VoxelGrapher::process(float time, float delta) {
+  GUIBusIn busIn(variables);
+
   if (!ImGui::GetIO().WantCaptureKeyboard) {
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
       if (!cameraMode) {
@@ -89,8 +92,7 @@ void VoxelGrapher::process(float time, float delta) {
       }
     }
 
-    if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS)
-      guiParams.screenshot = true;
+    if (glfwGetKey(window, GLFW_KEY_F2) == GLFW_PRESS) screenshot = true;
 
     if (glfwGetKey(window, GLFW_KEY_F5) == GLFW_PRESS)
       glfwSetWindowShouldClose(window, true);
@@ -153,69 +155,65 @@ void VoxelGrapher::process(float time, float delta) {
 
     if (!cameraMode) {
       if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
-        if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-          guiParams.isHelpShortcut = true;
+        if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) busIn.openHelp = true;
 
-        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-          guiParams.isInfoShortcut = true;
+        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) busIn.openInfo = true;
 
         if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-          guiParams.isParamShortcut = true;
+          busIn.openParams = true;
 
         if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS)
-          guiParams.isFunctionShortcut = true;
+          busIn.openFunctions = true;
 
         if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
-          guiParams.isVariablesShortcut = true;
+          busIn.openVariables = true;
 
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-          guiParams.isLoadShortcut = true;
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) busIn.openLoad = true;
 
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-          guiParams.isSaveShortcut = true;
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) busIn.openSave = true;
       }
     }
   }
 
-  // Data sent to the GUI
-  {
-    const glm::vec3& pos = camera.getPos();
+  busIn.cameraMode = cameraMode;
 
-    guiParams.posX = pos.x;
-    guiParams.posY = pos.y;
-    guiParams.posZ = pos.z;
+  busIn.cameraPos = camera.getPos();
+  busIn.yaw = camera.getYaw();
+  busIn.pitch = camera.getPitch();
+  busIn.fov = camera.getFov();
+  busIn.sensitivity = camera.getSensitivity();
 
-    guiParams.time = time;
+  busIn.time = time;
 
-    guiParams.yaw = camera.getYaw();
-    guiParams.pitch = camera.getPitch();
+  busIn.maxRayLength = maxRayLength;
+  busIn.renderScale = renderScale;
+  busIn.interpolation = interpolation;
+
+  if (lastError) {
+    busIn.error = true;
+    busIn.errorText = lastErrorText;
   }
 
-  gui.process(time, delta, cameraMode);
+  const GUIBusOut busOut = gui.process(busIn);
+
+  maxRayLength = busOut.maxRayLength;
+  renderScale = busOut.renderScale;
+  interpolation = busOut.interpolation;
+
+  if (busOut.takeScreenshot) screenshot = true;
 
   // Chenking data GUI sent
-  if (guiParams.screenshot) {
-    guiParams.screenshot = false;
+  if (screenshot && lastScreenshotTime + 2 <= time) {
+    lastScreenshotTime = time;
 
-    if (lastScreenshotTime + 2 <= time) {
-      lastScreenshotTime = time;
-
-      createBmpImage(
-          "./data/screenshots/" + std::to_string(std::time(nullptr)) + ".bmp",
-          renderWidth, renderHeight, screen.getPixels());
-    }
+    createBmpImage(std::format("./data/screenshots/{}.bmp",
+                               std::to_string(std::time(nullptr))),
+                   renderWidth, renderHeight, screen.getPixels());
   }
 
-  if (guiParams.resetFuncs) {
-    guiParams.blockFunc = defaultBlockFunc;
-    guiParams.displayFunc = defaultDisplayFunc;
+  if (busOut.resetProgram) gui.resetFuncs(defaultBlockFunc, defaultDisplayFunc);
 
-    gui.resetFuncs();
-
-    guiParams.resetFuncs = false;
-  }
-
-  if (guiParams.compileFuncs) {
+  if (busOut.compileProgram) {
     try {
       std::string customVariables;
       for (const auto& variable : variables)
@@ -223,51 +221,43 @@ void VoxelGrapher::process(float time, float delta) {
 
       Shader newShader(
           readFileToString("./data/shaders/render.vert"),
-          preprocess(makePreprocArgs(guiParams.blockFunc, guiParams.displayFunc,
+          preprocess(makePreprocArgs(busOut.blockFunc, busOut.displayFunc,
                                      customVariables),
                      readFileToString("./data/shaders/render.frag")));
 
       renderShader = std::move(newShader);
 
-      guiParams.isFuncError = false;
+      lastError = false;
     } catch (const std::exception& e) {
-      guiParams.isFuncError = true;
-
-      guiParams.funcError = std::format("Error: {}", e.what());
+      lastError = true;
+      lastErrorText = std::format("Error: {}", e.what());
     }
-
-    guiParams.compileFuncs = false;
   }
 
-  if (guiParams.isRenderScaleChanged) {
-    renderWidth = (int)(width * guiParams.renderScale);
-    renderHeight = (int)(height * guiParams.renderScale);
+  if (busOut.renderScaleChanged) {
+    renderWidth = (int)(width * busOut.renderScale);
+    renderHeight = (int)(height * busOut.renderScale);
 
     screen.changeSize(renderWidth, renderHeight, width, height);
-
-    guiParams.isRenderScaleChanged = false;
   }
 
-  if (guiParams.interpolationChanged) {
-    if (guiParams.interpolateRender)
+  if (busOut.interpolationChanged) {
+    if (busOut.interpolation)
       screen.setFilterLinear();
     else
       screen.setFilterNearest();
-
-    guiParams.interpolationChanged = false;
   }
 
-  if (guiParams.isLoad) {
-    guiParams.isLoad = false;
-
+  if (busOut.loadSavefile) {
     variables.clear();
 
-    guiParams.blockFunc =
-        readFileToString("./data/saves/" + guiParams.savefile + "/block.txt");
-    guiParams.displayFunc =
-        readFileToString("./data/saves/" + guiParams.savefile + "/display.txt");
+    std::string blockFunc = readFileToString(
+        std::format("./data/saves/{}/block.txt", busOut.savefile));
+    std::string displayFunc = readFileToString(
+        std::format("./data/saves/{}/display.txt", busOut.savefile));
 
-    mINI::INIFile varsFile("./data/saves/" + guiParams.savefile + "/vars.ini");
+    mINI::INIFile varsFile(
+        std::format("./data/saves/{}/vars.ini", busOut.savefile));
 
     mINI::INIStructure ini;
 
@@ -287,20 +277,20 @@ void VoxelGrapher::process(float time, float delta) {
           std::stof(variable.second.get("max"));
     }
 
-    gui.resetFuncs();
+    gui.resetFuncs(blockFunc, displayFunc);
   }
 
-  if (guiParams.isSave) {
-    guiParams.isSave = false;
+  if (busOut.saveSavefile) {
+    std::filesystem::create_directory(
+        std::format("./data/saves/{}", busOut.savefile));
 
-    std::filesystem::create_directory("./data/saves/" + guiParams.savefile);
+    writeTextFile(std::format("./data/saves/{}/block.txt", busOut.savefile),
+                  busOut.blockFunc);
+    writeTextFile(std::format("./data/saves/{}/display.txt", busOut.savefile),
+                  busOut.displayFunc);
 
-    writeTextFile("./data/saves/" + guiParams.savefile + "/block.txt",
-                  guiParams.blockFunc);
-    writeTextFile("./data/saves/" + guiParams.savefile + "/display.txt",
-                  guiParams.displayFunc);
-
-    mINI::INIFile varsFile("./data/saves/" + guiParams.savefile + "/vars.ini");
+    mINI::INIFile varsFile(
+        std::format("./data/saves/{}/vars.ini", busOut.savefile));
 
     mINI::INIStructure ini;
 
@@ -311,21 +301,39 @@ void VoxelGrapher::process(float time, float delta) {
       ini[variable.name]["max"] = std::to_string(variable.max);
     }
 
-    auto a = varsFile.generate(ini);
+    varsFile.generate(ini);
   }
 
-  if (guiParams.isDelete) {
-    guiParams.isDelete = false;
+  if (busOut.deleteSavefile)
+    std::filesystem::remove_all(
+        std::format("./data/saves/{}", busOut.savefile));
 
-    std::filesystem::remove_all("./data/saves/" + guiParams.savefile);
+  if (busOut.cameraChanged) {
+    camera.setFov(busOut.fov);
+    camera.setSensitivity(busOut.sensitivity);
   }
 
-  if (guiParams.cameraChanged) {
-    guiParams.cameraChanged = false;
+  if (busOut.variableValueChanged)
+    variables.at(busOut.variableIndex).value = busOut.variableValue;
 
-    camera.setFov(guiParams.fov);
-    camera.setSensitivity(guiParams.sensitivity);
+  if (busOut.variableChanged) {
+    variables.at(busOut.variableIndex).value =
+        std::max(busOut.variableMin, variables.at(busOut.variableIndex).value);
+    variables.at(busOut.variableIndex).step = busOut.variableStep;
+    variables.at(busOut.variableIndex).min = busOut.variableMin;
+    variables.at(busOut.variableIndex).max = busOut.variableMax;
   }
+
+  if (busOut.variableAdded && variables.size() < MAX_VARIABLES) {
+    variables.emplace_back(busOut.variableName);
+    variables.at(variables.size() - 1).step = busOut.variableStep;
+    variables.at(variables.size() - 1).min = busOut.variableMin;
+    variables.at(variables.size() - 1).max = busOut.variableMax;
+    variables.at(variables.size() - 1).value = busOut.variableMin;
+  }
+
+  if (busOut.variableDeleted)
+    variables.erase(variables.begin() + busOut.variableIndex);
 }
 
 void VoxelGrapher::draw(float time, float delta) const {
@@ -343,7 +351,7 @@ void VoxelGrapher::draw(float time, float delta) const {
   renderShader.trySetUniformVec3("cameraPos", camera.getPos());
   renderShader.trySetUniformFloat("cameraFov", camera.getFov());
 
-  renderShader.trySetUniformFloat("maxRayLength", guiParams.maxRayLength);
+  renderShader.trySetUniformFloat("maxRayLength", maxRayLength);
   renderShader.trySetUniformFloat("t", time);
 
   for (const auto& variable : variables)
@@ -357,14 +365,14 @@ void VoxelGrapher::draw(float time, float delta) const {
 
   glUseProgram(0);
 
-  gui.draw(time, delta);
+  gui.draw();
 }
 
 void VoxelGrapher::windowResize(int _width, int _height) {
   width = _width;
   height = _height;
-  renderWidth = (int)(width * guiParams.renderScale);
-  renderHeight = (int)(height * guiParams.renderScale);
+  renderWidth = (int)(width * renderScale);
+  renderHeight = (int)(height * renderScale);
 
   glViewport(0, 0, width, height);
 

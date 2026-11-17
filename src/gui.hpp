@@ -1,58 +1,89 @@
 #pragma once
 
+#include <cstddef>
 #include <string>
 #include <vector>
 
+#include "glm/ext/vector_float3.hpp"
 #include "variable.hpp"
 
-struct GUIparams {
-  float maxRayLength = 50;
-  std::string blockFunc;
-  std::string displayFunc;
-  bool resetFuncs = false;
-  bool compileFuncs = false;
-  bool isFuncError = false;
-  std::string funcError;
-  float renderScale = 1;
-  bool isRenderScaleChanged = false;
-  bool interpolateRender = false;
-  bool interpolationChanged = false;
-  bool isLoad = false;
-  bool isSave = false;
-  bool isDelete = false;
-  std::string savefile;
-  float posX;
-  float posY;
-  float posZ;
-  float time;
-  bool isHelpShortcut = false;
-  bool isParamShortcut = false;
-  bool isInfoShortcut = false;
-  bool isFunctionShortcut = false;
-  bool isVariablesShortcut = false;
-  bool screenshot = false;
-  std::vector<Variable>& variables;
-  float yaw;
-  float pitch;
-  float fov = 45;
-  float sensitivity = 0.1;
-  bool cameraChanged = false;
-  bool isLoadShortcut = false;
-  bool isSaveShortcut = false;
+struct GUIBusIn {
+  bool cameraMode = false;
+  glm::vec3 cameraPos = glm::vec3();
+  float time = 0;
+  float yaw = 0;
+  float pitch = 0;
+  float fov = 0;
+  float sensitivity = 0;
 
-  GUIparams(const std::string& blockFunc, const std::string& displayFunc,
-            std::vector<Variable>& variables);
+  float maxRayLength = 0;
+
+  float renderScale = 0;
+  bool interpolation = false;
+
+  bool error = false;
+  std::string_view errorText = "";
+
+  const std::vector<Variable>& variables;
+
+  bool openHelp = false;
+  bool openInfo = false;
+  bool openParams = false;
+  bool openFunctions = false;
+  bool openVariables = false;
+  bool openSave = false;
+  bool openLoad = false;
+
+  GUIBusIn(const std::vector<Variable>& variables);
+};
+
+struct GUIBusOut {
+  bool takeScreenshot = false;
+  
+  float maxRayLength = 0;
+
+  bool renderScaleChanged = false;
+  float renderScale = 0;
+
+  bool interpolationChanged = false;
+  bool interpolation = false;
+
+  bool cameraChanged = false;
+  float fov = 0;
+  float sensitivity = 0;
+
+  bool resetProgram = false;
+  bool compileProgram = false;
+  std::string blockFunc = "";
+  std::string displayFunc = "";
+
+  bool variableValueChanged = false;
+  bool variableChanged = false;
+  bool variableDeleted = false;
+  bool variableAdded = false;
+  size_t variableIndex = 0;
+  std::string variableName = "";
+  float variableValue = 0;
+  float variableStep = 0;
+  float variableMin = 0;
+  float variableMax = 0;
+
+  bool loadSavefile = false;
+  bool saveSavefile = false;
+  bool deleteSavefile = false;
+  std::string savefile = "";
 };
 
 class GUI {
  private:
-  GUIparams& params;
-
   bool isHelpWindow = false;
+
   bool isParamWindow = false;
+  
   bool isInfoWindow = false;
 
-  bool isFunctionWindow = false;
+  bool isFunctionsWindow = false;
+  std::string errorText;
   std::vector<char> blockFuncText;
   std::vector<char> displayFuncText;
 
@@ -77,35 +108,35 @@ class GUI {
 
   float renderScale = 1;
 
-  void menuBar();
+  void menuBar(const GUIBusIn& busIn, GUIBusOut& busOut);
 
-  void helpWindow();
+  void helpWindow(const GUIBusIn& busIn, GUIBusOut& busOut);
 
-  void infoWindow();
+  void infoWindow(const GUIBusIn& busIn, GUIBusOut& busOut);
 
-  void paramWindow();
+  void paramWindow(const GUIBusIn& busIn, GUIBusOut& busOut);
 
-  void functionWindow();
+  void functionWindow(const GUIBusIn& busIn, GUIBusOut& busOut);
 
-  void variablesWindow();
+  void variablesWindow(const GUIBusIn& busIn, GUIBusOut& busOut);
 
-  void loadPopup();
+  void loadPopup(const GUIBusIn& busIn, GUIBusOut& busOut);
 
-  void savePopup();
+  void savePopup(const GUIBusIn& busIn, GUIBusOut& busOut);
 
-  void addVariablePopup();
+  void addVariablePopup(const GUIBusIn& busIn, GUIBusOut& busOut);
 
-  void changeVariablePopup();
+  void changeVariablePopup(const GUIBusIn& busIn, GUIBusOut& busOut);
 
  public:
-  GUI(GUIparams& params);
+  GUI(std::string_view blockFunc, std::string_view displayFunc);
 
   GUI(const GUI&) = delete;
   GUI& operator=(const GUI&) = delete;
 
-  void process(float time, float delta, bool cameraMode);
+  GUIBusOut process(const GUIBusIn& bus);
 
-  void draw(float time, float delta) const;
+  void draw() const;
 
-  void resetFuncs();
+  void resetFuncs(std::string_view blockFunc, std::string_view displayFunc);
 };

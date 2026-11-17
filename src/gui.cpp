@@ -3,18 +3,16 @@
 #include <algorithm>
 #include <filesystem>
 #include <string>
+#include <string_view>
 
 #include "graphics/glm.hpp"
 #include "graphics/imgui.hpp"
 #include "utils.hpp"
 
+GUIBusIn::GUIBusIn(const std::vector<Variable>& variables)
+    : variables(variables) {}
 
-GUIparams::GUIparams(const std::string& blockFunc,
-                     const std::string& displayFunc,
-                     std::vector<Variable>& variables)
-    : blockFunc(blockFunc), displayFunc(displayFunc), variables(variables) {}
-
-GUI::GUI(GUIparams& params) : params(params) {
+GUI::GUI(std::string_view blockFunc, std::string_view displayFunc) {
   blockFuncText.resize(1025);
   displayFuncText.resize(1025);
 
@@ -22,10 +20,10 @@ GUI::GUI(GUIparams& params) : params(params) {
 
   variableNameText.resize(65);
 
-  resetFuncs();
+  resetFuncs(blockFunc, displayFunc);
 }
 
-void GUI::menuBar() {
+void GUI::menuBar(const GUIBusIn& busIn, GUIBusOut& busOut) {
   ImGui::BeginMainMenuBar();
 
   if (ImGui::BeginMenu("Windows")) {
@@ -33,14 +31,14 @@ void GUI::menuBar() {
     if (ImGui::MenuItem("Info", "Alt+X")) isInfoWindow = !isInfoWindow;
     if (ImGui::MenuItem("Parameters", "Alt+C")) isParamWindow = !isParamWindow;
     if (ImGui::MenuItem("Function", "Alt+V"))
-      isFunctionWindow = !isFunctionWindow;
+      isFunctionsWindow = !isFunctionsWindow;
     if (ImGui::MenuItem("Variables", "Alt+B"))
       isVariablesWindow = !isVariablesWindow;
     ImGui::EndMenu();
   }
 
   if (ImGui::BeginMenu("Tools")) {
-    if (ImGui::MenuItem("Screenshot", "F2")) params.screenshot = true;
+    if (ImGui::MenuItem("Screenshot", "F2")) busOut.takeScreenshot = true;
     if (ImGui::MenuItem("Save", "Alt+S")) isSavePopup = true;
     if (ImGui::MenuItem("Load", "Alt+D")) isLoadPopup = true;
     ImGui::EndMenu();
@@ -49,7 +47,7 @@ void GUI::menuBar() {
   ImGui::EndMainMenuBar();
 }
 
-void GUI::helpWindow() {
+void GUI::helpWindow(const GUIBusIn& busIn, GUIBusOut& busOut) {
   if (isHelpWindow) {
     ImGui::Begin("Help", &isHelpWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
@@ -72,53 +70,59 @@ void GUI::helpWindow() {
   }
 }
 
-void GUI::infoWindow() {
+void GUI::infoWindow(const GUIBusIn& busIn, GUIBusOut& busOut) {
   if (isInfoWindow) {
     ImGui::Begin("Info", &isInfoWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
     ImGui::Text("FPS: %.0f", ImGui::GetIO().Framerate);
 
-    ImGui::Text("Pos: %.2f %.2f %.2f", params.posX, params.posY, params.posZ);
+    ImGui::Text("Pos: %.2f %.2f %.2f", busIn.cameraPos.x, busIn.cameraPos.y,
+                busIn.cameraPos.z);
 
-    ImGui::Text("Time: %.2f", params.time);
+    ImGui::Text("Time: %.2f", busIn.time);
 
-    ImGui::Text("Yaw: %.2f", params.yaw);
+    ImGui::Text("Yaw: %.2f", busIn.yaw);
 
-    ImGui::Text("Pitch: %.2f", params.pitch);
+    ImGui::Text("Pitch: %.2f", busIn.pitch);
 
     ImGui::End();
   }
 }
 
-void GUI::paramWindow() {
+void GUI::paramWindow(const GUIBusIn& busIn, GUIBusOut& busOut) {
   if (isParamWindow) {
     ImGui::Begin("Params", &isParamWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-    ImGui::DragFloat("Max Ray Length", &params.maxRayLength, 1, 10, 1000,
+    busOut.maxRayLength = busIn.maxRayLength;
+    ImGui::DragFloat("Max Ray Length", &busOut.maxRayLength, 1, 10, 1000,
                      "%.0f");
 
+    busOut.renderScale = busIn.renderScale;
     if (ImGui::DragFloat("Render Scale", &renderScale, 0.005, 0.2, 2, "%.1f")) {
-      params.renderScale = round(renderScale * 10) / 10;
-      params.isRenderScaleChanged = true;
+      busOut.renderScale = round(renderScale * 10) / 10;
+      busOut.renderScaleChanged = true;
     }
 
-    if (ImGui::DragFloat("Camera Fov", &params.fov, 1, 5, 180, "%.0f"))
-      params.cameraChanged = true;
+    busOut.fov = busIn.fov;
+    if (ImGui::DragFloat("Camera Fov", &busOut.fov, 1, 5, 180, "%.0f"))
+      busOut.cameraChanged = true;
 
-    if (ImGui::DragFloat("Camera Sensitivity", &params.sensitivity, 0.01, 0.01,
+    busOut.sensitivity = busIn.sensitivity;
+    if (ImGui::DragFloat("Camera Sensitivity", &busOut.sensitivity, 0.01, 0.01,
                          0.2, "%.2f"))
-      params.cameraChanged = true;
+      busOut.cameraChanged = true;
 
-    if (ImGui::Checkbox("Interpolation", &params.interpolateRender))
-      params.interpolationChanged = true;
+    busOut.interpolation = busIn.interpolation;
+    if (ImGui::Checkbox("Interpolation", &busOut.interpolation))
+      busOut.interpolationChanged = true;
 
     ImGui::End();
   }
 }
 
-void GUI::functionWindow() {
-  if (isFunctionWindow) {
-    ImGui::Begin("Function", &isFunctionWindow,
+void GUI::functionWindow(const GUIBusIn& busIn, GUIBusOut& busOut) {
+  if (isFunctionsWindow) {
+    ImGui::Begin("Function", &isFunctionsWindow,
                  ImGuiWindowFlags_AlwaysAutoResize);
 
     ImGui::TextUnformatted("Block Function:");
@@ -133,25 +137,27 @@ void GUI::functionWindow() {
                               ImVec2(ImGui::GetTextLineHeight() * 32,
                                      ImGui::GetTextLineHeight() * 14));
 
-    if (params.isFuncError)
-      ImGui::TextColored(ImVec4(1, 0, 0, 1), "%s", params.funcError.c_str());
+    if (busIn.error) {
+      errorText = busIn.errorText;
+      ImGui::TextColored(ImVec4(1, 0, 0, 1), "%s", errorText.c_str());
+    }
 
-    if (ImGui::Button("Reset")) params.resetFuncs = true;
+    if (ImGui::Button("Reset")) busOut.resetProgram = true;
 
     ImGui::SameLine();
 
     if (ImGui::Button("Compile")) {
-      params.blockFunc = std::string(blockFuncText.data());
-      params.displayFunc = std::string(displayFuncText.data());
+      busOut.blockFunc = std::string(blockFuncText.data());
+      busOut.displayFunc = std::string(displayFuncText.data());
 
-      params.compileFuncs = true;
+      busOut.compileProgram = true;
     }
 
     ImGui::End();
   }
 }
 
-void GUI::variablesWindow() {
+void GUI::variablesWindow(const GUIBusIn& busIn, GUIBusOut& busOut) {
   if (isVariablesWindow) {
     ImGui::Begin("Variables", &isVariablesWindow,
                  ImGuiWindowFlags_AlwaysAutoResize);
@@ -161,8 +167,8 @@ void GUI::variablesWindow() {
     if (ImGui::BeginListBox(
             "##Variables", ImVec2(12 * ImGui::GetTextLineHeightWithSpacing(),
                                   8 * ImGui::GetTextLineHeightWithSpacing()))) {
-      for (size_t i = 0; i < params.variables.size(); i++) {
-        if (ImGui::Selectable(params.variables.at(i).name.c_str(),
+      for (size_t i = 0; i < busIn.variables.size(); i++) {
+        if (ImGui::Selectable(busIn.variables.at(i).name.c_str(),
                               variableIndex == i))
           variableIndex = i;
 
@@ -172,11 +178,16 @@ void GUI::variablesWindow() {
       ImGui::EndListBox();
     }
 
-    if (variableIndex != (size_t)-1)
-      ImGui::DragFloat("##Value", &params.variables.at(variableIndex).value,
-                       params.variables.at(variableIndex).step,
-                       params.variables.at(variableIndex).min,
-                       params.variables.at(variableIndex).max);
+    if (variableIndex != (size_t)-1) {
+      busOut.variableValueChanged = true;
+      busOut.variableIndex = variableIndex;
+      busOut.variableValue = busIn.variables.at(variableIndex).value;
+
+      ImGui::DragFloat("##Value", &busOut.variableValue,
+                       busIn.variables.at(variableIndex).step,
+                       busIn.variables.at(variableIndex).min,
+                       busIn.variables.at(variableIndex).max);
+    }
 
     if (ImGui::Button("Add")) isAddVariablePopup = true;
 
@@ -188,7 +199,8 @@ void GUI::variablesWindow() {
     ImGui::SameLine();
 
     if (ImGui::Button("Delete") && variableIndex != (size_t)-1) {
-      params.variables.erase(params.variables.begin() + variableIndex);
+      busOut.variableDeleted = true;
+      busOut.variableIndex = variableIndex;
       variableIndex = (size_t)-1;
     }
 
@@ -196,7 +208,7 @@ void GUI::variablesWindow() {
   }
 }
 
-void GUI::loadPopup() {
+void GUI::loadPopup(const GUIBusIn& busIn, GUIBusOut& busOut) {
   if (ImGui::BeginPopupModal("Load", nullptr,
                              ImGuiWindowFlags_AlwaysAutoResize)) {
     ImGui::TextUnformatted("Savefiles:");
@@ -215,8 +227,8 @@ void GUI::loadPopup() {
     }
 
     if (ImGui::Button("Load") && savefileIndex != (size_t)-1) {
-      params.savefile = savefiles.at(savefileIndex);
-      params.isLoad = true;
+      busOut.savefile = savefiles.at(savefileIndex);
+      busOut.loadSavefile = true;
 
       ImGui::CloseCurrentPopup();
     }
@@ -224,8 +236,8 @@ void GUI::loadPopup() {
     ImGui::SameLine();
 
     if (ImGui::Button("Delete") && savefileIndex != (size_t)-1) {
-      params.savefile = savefiles.at(savefileIndex);
-      params.isDelete = true;
+      busOut.savefile = savefiles.at(savefileIndex);
+      busOut.deleteSavefile = true;
 
       ImGui::CloseCurrentPopup();
     }
@@ -238,7 +250,7 @@ void GUI::loadPopup() {
   }
 }
 
-void GUI::savePopup() {
+void GUI::savePopup(const GUIBusIn& busIn, GUIBusOut& busOut) {
   if (ImGui::BeginPopupModal("Save", nullptr,
                              ImGuiWindowFlags_AlwaysAutoResize)) {
     ImGui::TextUnformatted("Name:");
@@ -246,10 +258,10 @@ void GUI::savePopup() {
     ImGui::InputText("##Name", savefileNameText.data(), 64);
 
     if (ImGui::Button("Save")) {
-      params.savefile = std::string(savefileNameText.data());
-      params.isSave = true;
-      params.blockFunc = std::string(blockFuncText.data());
-      params.displayFunc = std::string(displayFuncText.data());
+      busOut.savefile = std::string(savefileNameText.data());
+      busOut.saveSavefile = true;
+      busOut.blockFunc = std::string(blockFuncText.data());
+      busOut.displayFunc = std::string(displayFuncText.data());
 
       ImGui::CloseCurrentPopup();
     }
@@ -262,7 +274,7 @@ void GUI::savePopup() {
   }
 }
 
-void GUI::addVariablePopup() {
+void GUI::addVariablePopup(const GUIBusIn& busIn, GUIBusOut& busOut) {
   if (ImGui::BeginPopupModal("Add Variable", nullptr,
                              ImGuiWindowFlags_AlwaysAutoResize)) {
     ImGui::TextUnformatted("Name:");
@@ -284,17 +296,17 @@ void GUI::addVariablePopup() {
     if (ImGui::Button("Add") &&
             isValidId(std::string(variableNameText.data())) &&
             [&](const std::string& name) -> bool {
-          for (const auto& variable : params.variables)
+          for (const auto& variable : busIn.variables)
             if (variable.name == name) return false;
 
           return true;
         }(std::string(variableNameText.data()))) {
-      params.variables.push_back(
-          Variable(std::string(variableNameText.data())));
+      busOut.variableAdded = true;
 
-      params.variables.at(params.variables.size() - 1).step = variableStep;
-      params.variables.at(params.variables.size() - 1).min = variableMin;
-      params.variables.at(params.variables.size() - 1).max = variableMax;
+      busOut.variableName = std::string(variableNameText.data());
+      busOut.variableStep = variableStep;
+      busOut.variableMin = variableMin;
+      busOut.variableMax = variableMax;
 
       ImGui::CloseCurrentPopup();
     }
@@ -307,7 +319,7 @@ void GUI::addVariablePopup() {
   }
 }
 
-void GUI::changeVariablePopup() {
+void GUI::changeVariablePopup(const GUIBusIn& busIn, GUIBusOut& busOut) {
   if (ImGui::BeginPopupModal("Change Variable", nullptr,
                              ImGuiWindowFlags_AlwaysAutoResize)) {
     ImGui::TextUnformatted("Step:");
@@ -323,9 +335,11 @@ void GUI::changeVariablePopup() {
     ImGui::InputFloat("##Max", &variableMax);
 
     if (ImGui::Button("Confirm")) {
-      params.variables.at(variableIndex).step = variableStep;
-      params.variables.at(variableIndex).min = variableMin;
-      params.variables.at(variableIndex).max = variableMax;
+      busOut.variableChanged = true;
+
+      busOut.variableStep = variableStep;
+      busOut.variableMin = variableMin;
+      busOut.variableMax = variableMax;
 
       ImGui::CloseCurrentPopup();
     }
@@ -338,57 +352,42 @@ void GUI::changeVariablePopup() {
   }
 }
 
-void GUI::process(float time, float delta, bool cameraMode) {
+GUIBusOut GUI::process(const GUIBusIn& busIn) {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 
+  GUIBusOut busOut;
+
+  busOut.maxRayLength = busIn.maxRayLength;
+  busOut.renderScale = busIn.renderScale;
+  busOut.interpolation = busIn.interpolation;
+
   // Shortcuts
-  if (params.isHelpShortcut) {
-    isHelpWindow = true;
-    params.isHelpShortcut = false;
-  }
+  if (busIn.openHelp) isHelpWindow = true;
 
-  if (params.isInfoShortcut) {
-    isInfoWindow = true;
-    params.isInfoShortcut = false;
-  }
+  if (busIn.openInfo) isInfoWindow = true;
 
-  if (params.isParamShortcut) {
-    isParamWindow = true;
-    params.isParamShortcut = false;
-  }
+  if (busIn.openParams) isParamWindow = true;
 
-  if (params.isFunctionShortcut) {
-    isFunctionWindow = true;
-    params.isFunctionShortcut = false;
-  }
+  if (busIn.openFunctions) isFunctionsWindow = true;
 
-  if (params.isVariablesShortcut) {
-    isVariablesWindow = true;
-    params.isVariablesShortcut = false;
-  }
+  if (busIn.openVariables) isVariablesWindow = true;
 
-  if (params.isSaveShortcut) {
-    isSavePopup = true;
-    params.isSaveShortcut = false;
-  }
+  if (busIn.openSave) isSavePopup = true;
 
-  if (params.isLoadShortcut) {
-    isLoadPopup = true;
-    params.isLoadShortcut = false;
-  }
+  if (busIn.openLoad) isLoadPopup = true;
 
   // Main windows and other
-  menuBar();
+  menuBar(busIn, busOut);
 
-  infoWindow();
+  infoWindow(busIn, busOut);
 
-  if (!cameraMode) {
-    helpWindow();
-    paramWindow();
-    functionWindow();
-    variablesWindow();
+  if (!busIn.cameraMode) {
+    helpWindow(busIn, busOut);
+    paramWindow(busIn, busOut);
+    functionWindow(busIn, busOut);
+    variablesWindow(busIn, busOut);
   }
 
   if (isLoadPopup) {
@@ -402,6 +401,8 @@ void GUI::process(float time, float delta, bool cameraMode) {
         savefiles.push_back(file.path().stem().string());
 
     std::sort(savefiles.begin(), savefiles.end());
+
+    savefilesC.reserve(savefiles.size());
 
     for (const auto& file : savefiles) savefilesC.push_back(file.c_str());
 
@@ -439,38 +440,40 @@ void GUI::process(float time, float delta, bool cameraMode) {
   if (isChangeVariablePopup) {
     isChangeVariablePopup = false;
 
-    variableStep = params.variables.at(variableIndex).step;
-    variableMin = params.variables.at(variableIndex).min;
-    variableMax = params.variables.at(variableIndex).max;
+    variableStep = busIn.variables.at(variableIndex).step;
+    variableMin = busIn.variables.at(variableIndex).min;
+    variableMax = busIn.variables.at(variableIndex).max;
 
     ImGui::OpenPopup("Change Variable");
     ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
                             ImGuiCond_Appearing, ImVec2(0.5, 0.5));
   }
 
-  loadPopup();
-  savePopup();
-  addVariablePopup();
-  changeVariablePopup();
+  loadPopup(busIn, busOut);
+  savePopup(busIn, busOut);
+  addVariablePopup(busIn, busOut);
+  changeVariablePopup(busIn, busOut);
+
+  return busOut;
 }
 
-void GUI::draw(float time, float delta) const {
+void GUI::draw() const {
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void GUI::resetFuncs() {
+void GUI::resetFuncs(std::string_view blockFunc, std::string_view displayFunc) {
   blockFuncText.clear();
   displayFuncText.clear();
 
   blockFuncText.resize(1025);
   displayFuncText.resize(1025);
 
-  for (std::size_t i = 0; i < params.blockFunc.size(); i++)
-    blockFuncText.at(i) = params.blockFunc.at(i);
+  for (std::size_t i = 0; i < blockFunc.size(); i++)
+    blockFuncText.at(i) = blockFunc.at(i);
 
-  for (std::size_t i = 0; i < params.displayFunc.size(); i++)
-    displayFuncText.at(i) = params.displayFunc.at(i);
+  for (std::size_t i = 0; i < displayFunc.size(); i++)
+    displayFuncText.at(i) = displayFunc.at(i);
 
   variableIndex = (size_t)-1;
 }

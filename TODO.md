@@ -1,14 +1,16 @@
 ## TODO
 
-- remake GUI bus system
-- put variable limit
 - add good logging +-
 - add ability to change GUI color theme
+- make better help
+- make better shortcuts
 
 - add release page to the site
 
 ## FINISHED
 
+- put variable limit
+- remake GUI bus system
 - change formating
 - add vector based icon
 - add no ai code policy
