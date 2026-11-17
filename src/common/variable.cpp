@@ -1,6 +1,6 @@
 #include "variable.hpp"
 
-#include <algorithm>
+#include <format>
 
 Variable::Variable(std::string_view name) : name(name) {}
 
@@ -26,5 +26,5 @@ Variable& Variable::operator=(Variable&& other) noexcept {
 }
 
 std::string Variable::toString() const {
-  return "uniform float " + name + ";\n";
+  return std::format("uniform float {};\n", name);
 }

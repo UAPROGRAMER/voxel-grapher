@@ -3,13 +3,18 @@
 #include <mini/ini.h>
 
 #include <exception>
+#include <filesystem>
 #include <format>
+#include <stdexcept>
+#include <tuple>
 
-#include "GLFW/glfw3.h"
+#include "common/logs.hpp"
+#include "common/preprocessor.hpp"
+#include "common/theme.hpp"
+#include "common/utils.hpp"
 #include "graphics/imgui.hpp"
+#include "graphics/opengl.hpp"
 #include "gui.hpp"
-#include "preprocessor.hpp"
-#include "utils.hpp"
 
 constexpr std::size_t MAX_VARIABLES = 256;
 
@@ -55,6 +60,13 @@ VoxelGrapher::VoxelGrapher(GLFWwindow* window, int width, int height)
       variables() {
   glfwGetWindowSize(window, &width, &height);
   glfwGetWindowPos(window, &posX, &posY);
+
+  if (std::filesystem::exists("./data/theme-light"))
+    theme = Theme::LIGHT;
+  else if (std::filesystem::exists("./data/theme-dark"))
+    theme = Theme::DARK;
+  else if (std::filesystem::exists("./data/theme-classic"))
+    theme = Theme::CLASSIC;
 }
 
 void VoxelGrapher::run() {
@@ -155,22 +167,55 @@ void VoxelGrapher::process(float time, float delta) {
 
     if (!cameraMode) {
       if (glfwGetKey(window, GLFW_KEY_LEFT_ALT) == GLFW_PRESS) {
-        if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) busIn.openHelp = true;
+        if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS) busIn.openHelp = true;
 
-        if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) busIn.openInfo = true;
+        if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) busIn.openInfo = true;
 
-        if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+        if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
           busIn.openParams = true;
 
-        if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS)
+        if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
           busIn.openFunctions = true;
 
-        if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+        if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS)
           busIn.openVariables = true;
 
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) busIn.openLoad = true;
+        if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) busIn.openLoad = true;
 
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) busIn.openSave = true;
+
+        if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+          std::filesystem::remove("./data/theme-light");
+          std::filesystem::remove("./data/theme-dark");
+
+          std::ignore = std::ofstream("./data/theme-classic");
+
+          glfwSetWindowShouldClose(window, true);
+
+          theme = Theme::CLASSIC;
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) {
+          std::filesystem::remove("./data/theme-classic");
+          std::filesystem::remove("./data/theme-dark");
+
+          std::ignore = std::ofstream("./data/theme-light");
+
+          glfwSetWindowShouldClose(window, true);
+
+          theme = Theme::LIGHT;
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS) {
+          std::filesystem::remove("./data/theme-classic");
+          std::filesystem::remove("./data/theme-light");
+
+          std::ignore = std::ofstream("./data/theme-dark");
+
+          glfwSetWindowShouldClose(window, true);
+
+          theme = Theme::DARK;
+        }
       }
     }
   }
@@ -188,6 +233,8 @@ void VoxelGrapher::process(float time, float delta) {
   busIn.maxRayLength = maxRayLength;
   busIn.renderScale = renderScale;
   busIn.interpolation = interpolation;
+
+  busIn.theme = theme;
 
   if (lastError) {
     busIn.error = true;
@@ -278,6 +325,9 @@ void VoxelGrapher::process(float time, float delta) {
     }
 
     gui.resetFuncs(blockFunc, displayFunc);
+
+    makeLog(LogType::INFO,
+            std::format("Loaded savefile \"{}\".", busOut.savefile));
   }
 
   if (busOut.saveSavefile) {
@@ -302,11 +352,16 @@ void VoxelGrapher::process(float time, float delta) {
     }
 
     varsFile.generate(ini);
+
+    makeLog(LogType::INFO, std::format("Saved file \"{}\".", busOut.savefile));
   }
 
-  if (busOut.deleteSavefile)
+  if (busOut.deleteSavefile) {
     std::filesystem::remove_all(
         std::format("./data/saves/{}", busOut.savefile));
+    makeLog(LogType::INFO,
+            std::format("Deleted file \"{}\".", busOut.savefile));
+  }
 
   if (busOut.cameraChanged) {
     camera.setFov(busOut.fov);
@@ -334,6 +389,38 @@ void VoxelGrapher::process(float time, float delta) {
 
   if (busOut.variableDeleted)
     variables.erase(variables.begin() + busOut.variableIndex);
+
+  if (busOut.themeChanged) {
+    if (busOut.theme == Theme::CLASSIC) {
+      std::filesystem::remove("./data/theme-light");
+      std::filesystem::remove("./data/theme-dark");
+
+      std::ignore = std::ofstream("./data/theme-classic");
+
+      glfwSetWindowShouldClose(window, true);
+
+      theme = Theme::CLASSIC;
+    } else if (busOut.theme == Theme::LIGHT) {
+      std::filesystem::remove("./data/theme-classic");
+      std::filesystem::remove("./data/theme-dark");
+
+      std::ignore = std::ofstream("./data/theme-light");
+
+      glfwSetWindowShouldClose(window, true);
+
+      theme = Theme::LIGHT;
+    } else if (busOut.theme == Theme::DARK) {
+      std::filesystem::remove("./data/theme-classic");
+      std::filesystem::remove("./data/theme-light");
+
+      std::ignore = std::ofstream("./data/theme-dark");
+
+      glfwSetWindowShouldClose(window, true);
+
+      theme = Theme::DARK;
+    } else
+      makeLog(LogType::ERROR, "Failed to find theme.");
+  }
 }
 
 void VoxelGrapher::draw(float time, float delta) const {

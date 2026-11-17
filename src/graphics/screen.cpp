@@ -2,9 +2,8 @@
 
 #include <stdexcept>
 
-#include "opengl.hpp"
-
 #include "../common/logs.hpp"
+#include "opengl.hpp"
 
 float displayVertices[] = {
     // clang-format off

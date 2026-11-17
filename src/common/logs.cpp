@@ -1,26 +1,33 @@
 #include "logs.hpp"
+
 #include <exception>
 #include <format>
 #include <fstream>
+#include <sstream>
 
 void makeLog(LogType type, std::string_view msg) {
-    static std::ofstream logFile(std::format("./data/logs/{}.log", std::time(nullptr)));
+  static std::stringstream logStream;
 
-    switch (type) {
-        case LogType::INFO:
-            logFile << "[INFO]: ";
-            break;
-        case LogType::WARNING:
-            logFile << "[WARNING]: ";
-            break;
-        case LogType::ERROR:
-            logFile << "[ERROR]: ";
-            break;
-    }
+  switch (type) {
+    case LogType::INFO:
+      logStream << "[INFO]: ";
+      break;
+    case LogType::WARNING:
+      logStream << "[WARNING]: ";
+      break;
+    case LogType::ERROR:
+      logStream << "[ERROR]: ";
+      break;
+  }
 
-    logFile << msg << '\n';
+  logStream << msg << '\n';
 
-    logFile.flush();
+  if (type == LogType::ERROR) {
+    static std::ofstream logFile(
+        std::format("./data/logs/{}.log", std::time(nullptr)));
 
-    if (type == LogType::ERROR) throw std::exception();
+    logFile << logStream.rdbuf();
+
+    throw std::exception();
+  }
 }

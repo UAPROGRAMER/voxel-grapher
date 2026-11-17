@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <string_view>
 
-#include "common/logs.hpp"
+#include "logs.hpp"
 
 std::string readFileToString(std::string_view path) {
   if (!std::filesystem::exists(path))

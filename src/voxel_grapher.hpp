@@ -1,12 +1,14 @@
 #pragma once
 
 #include <string>
+
+#include "common/theme.hpp"
+#include "common/variable.hpp"
 #include "graphics/camera.hpp"
 #include "graphics/opengl.hpp"
 #include "graphics/screen.hpp"
 #include "graphics/shader.hpp"
 #include "gui.hpp"
-#include "variable.hpp"
 
 class VoxelGrapher {
  private:
@@ -40,6 +42,8 @@ class VoxelGrapher {
 
   bool lastError = false;
   std::string lastErrorText = "";
+
+  Theme theme;
 
   void process(float time, float delta);
 

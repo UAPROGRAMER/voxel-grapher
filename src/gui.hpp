@@ -4,8 +4,9 @@
 #include <string>
 #include <vector>
 
-#include "glm/ext/vector_float3.hpp"
-#include "variable.hpp"
+#include "common/theme.hpp"
+#include "common/variable.hpp"
+#include "graphics/glm.hpp"
 
 struct GUIBusIn {
   bool cameraMode = false;
@@ -34,12 +35,14 @@ struct GUIBusIn {
   bool openSave = false;
   bool openLoad = false;
 
+  Theme theme;
+
   GUIBusIn(const std::vector<Variable>& variables);
 };
 
 struct GUIBusOut {
   bool takeScreenshot = false;
-  
+
   float maxRayLength = 0;
 
   bool renderScaleChanged = false;
@@ -72,6 +75,9 @@ struct GUIBusOut {
   bool saveSavefile = false;
   bool deleteSavefile = false;
   std::string savefile = "";
+
+  bool themeChanged = false;
+  Theme theme;
 };
 
 class GUI {
@@ -79,7 +85,7 @@ class GUI {
   bool isHelpWindow = false;
 
   bool isParamWindow = false;
-  
+
   bool isInfoWindow = false;
 
   bool isFunctionsWindow = false;

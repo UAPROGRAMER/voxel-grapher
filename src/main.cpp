@@ -1,11 +1,18 @@
 #include <stb/stb_image.h>
 
+#include <filesystem>
+#include <fstream>
 #include <optional>
 
+#include "common/logs.hpp"
+#include "common/utils.hpp"
 #include "graphics/imgui.hpp"
 #include "graphics/opengl.hpp"
-#include "utils.hpp"
 #include "voxel_grapher.hpp"
+
+#ifdef __APPLE__
+#error "Mac OS is not suported."
+#endif
 
 constexpr int defaultWidth = 800;
 constexpr int defaultHeight = 800;
@@ -30,10 +37,21 @@ int main() {
     // Check folders and files
 
     checkFolder("./data", true);
+    checkFolder("./data/logs", false);
+
+#ifdef __linux__
+    makeLog(LogType::INFO, "System: Linux.");
+#endif
+
+#ifdef __APPLE__
+    makeLog(LogType::INFO, "System: MacOS.");
+#endif
+
+    makeLog(LogType::INFO, "Checking the files.");
+
     checkFolder("./data/shaders", true);
     checkFolder("./data/icons", true);
 
-    checkFolder("./data/logs", false);
     checkFolder("./data/saves", false);
     checkFolder("./data/screenshots", false);
 
@@ -46,6 +64,8 @@ int main() {
     checkFile("./data/icons/icon-256.png");
     checkFile("./data/icons/icon-128.png");
     checkFile("./data/icons/icon.ico");
+
+    makeLog(LogType::INFO, "Intitializing GLFW.");
 
     // Glfw init
 
@@ -61,36 +81,34 @@ int main() {
                          "cc.stanislavyatskiv.voxel-grapher");
 
 // Some apple magic (as always)
-#if defined(__APPLE__) && defined(__MACH__)
+#if __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    /*
-    #if defined(__linux__)
-        glfwWindowHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
-    #endif
-    */
+#ifdef __linux__
+    if (std::filesystem::exists("./data/x11")) {
+      makeLog(LogType::INFO, "Platform: X11.");
+      glfwWindowHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
+    }
+#endif
 
     // Creating window
-
     GLFWwindow* window = glfwCreateWindow(defaultWidth, defaultHeight,
                                           "Voxel Grapher", nullptr, nullptr);
 
     if (!window) return 1;
 
+    // GLFW Settings
     glfwMakeContextCurrent(window);
 
-    // GLFW Settings
     glfwSwapInterval(1);
 
     // Callbacks
-
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     glfwSetCursorPosCallback(window, mouseCallback);
     glfwSetScrollCallback(window, scrollCallback);
 
     // Window icon
-
     GLFWimage windowIcon[3];
     int nrChannels;
 
@@ -113,6 +131,7 @@ int main() {
     stbi_image_free(windowIcon[2].pixels);
 
     // Loading opengl
+    makeLog(LogType::INFO, "Initializing OpenGL.");
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) return 1;
 
@@ -132,16 +151,29 @@ int main() {
     ImGui::CreateContext();
 
     ImGui::GetIO().IniFilename = "./data/imgui.ini";
-    // ImGui::StyleColorsLight();
+
+    if (std::filesystem::exists("./data/theme-light"))
+      ImGui::StyleColorsLight();
+    else if (std::filesystem::exists("./data/theme-dark"))
+      ImGui::StyleColorsDark();
+    else if (std::filesystem::exists("./data/theme-classic"))
+      ImGui::StyleColorsClassic();
+    else {
+      ImGui::StyleColorsClassic();
+      std::ignore = std::ofstream("./data/theme-classic");
+    }
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330 core");
 
     // Run the program
+    makeLog(LogType::INFO, "Starting the program.");
+
     voxelGrapher.emplace(window, defaultWidth, defaultHeight);
     voxelGrapher.value().run();
 
     // Turn off
+    makeLog(LogType::INFO, "Turning off the program.");
 
     ImGui::SaveIniSettingsToDisk(ImGui::GetIO().IniFilename);
 
@@ -162,12 +194,11 @@ int main() {
 }
 
 #ifdef _WIN32
-
 #include <windows.h>
-
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                      LPSTR lpCmdLine, int nCmdShow) {
+  makeLog(LogType::INFO, "System: Windows.");
+
   return main();
 }
-
 #endif

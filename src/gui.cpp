@@ -5,9 +5,11 @@
 #include <string>
 #include <string_view>
 
+#include "common/theme.hpp"
+#include "common/utils.hpp"
 #include "graphics/glm.hpp"
 #include "graphics/imgui.hpp"
-#include "utils.hpp"
+#include "imgui.h"
 
 GUIBusIn::GUIBusIn(const std::vector<Variable>& variables)
     : variables(variables) {}
@@ -27,12 +29,15 @@ void GUI::menuBar(const GUIBusIn& busIn, GUIBusOut& busOut) {
   ImGui::BeginMainMenuBar();
 
   if (ImGui::BeginMenu("Windows")) {
-    if (ImGui::MenuItem("Help", "Alt+Z")) isHelpWindow = !isHelpWindow;
-    if (ImGui::MenuItem("Info", "Alt+X")) isInfoWindow = !isInfoWindow;
-    if (ImGui::MenuItem("Parameters", "Alt+C")) isParamWindow = !isParamWindow;
-    if (ImGui::MenuItem("Function", "Alt+V"))
+    if (ImGui::MenuItem("Help", "Alt+H", isHelpWindow))
+      isHelpWindow = !isHelpWindow;
+    if (ImGui::MenuItem("Info", "Alt+I", isInfoWindow))
+      isInfoWindow = !isInfoWindow;
+    if (ImGui::MenuItem("Parameters", "Alt+P", isParamWindow))
+      isParamWindow = !isParamWindow;
+    if (ImGui::MenuItem("Functions", "Alt+F", isFunctionsWindow))
       isFunctionsWindow = !isFunctionsWindow;
-    if (ImGui::MenuItem("Variables", "Alt+B"))
+    if (ImGui::MenuItem("Variables", "Alt+V", isVariablesWindow))
       isVariablesWindow = !isVariablesWindow;
     ImGui::EndMenu();
   }
@@ -40,7 +45,27 @@ void GUI::menuBar(const GUIBusIn& busIn, GUIBusOut& busOut) {
   if (ImGui::BeginMenu("Tools")) {
     if (ImGui::MenuItem("Screenshot", "F2")) busOut.takeScreenshot = true;
     if (ImGui::MenuItem("Save", "Alt+S")) isSavePopup = true;
-    if (ImGui::MenuItem("Load", "Alt+D")) isLoadPopup = true;
+    if (ImGui::MenuItem("Load", "Alt+L")) isLoadPopup = true;
+    ImGui::EndMenu();
+  }
+
+  if (ImGui::BeginMenu("Theme")) {
+    if (ImGui::MenuItem("Classic", "Alt+1", busIn.theme == Theme::CLASSIC)) {
+      if (busIn.theme != Theme::CLASSIC) {
+        busOut.themeChanged = true;
+        busOut.theme = Theme::CLASSIC;
+      }
+    } else if (ImGui::MenuItem("Light", "Alt+2", busIn.theme == Theme::LIGHT)) {
+      if (busIn.theme != Theme::LIGHT) {
+        busOut.themeChanged = true;
+        busOut.theme = Theme::LIGHT;
+      }
+    } else if (ImGui::MenuItem("Dark", "Alt+3", busIn.theme == Theme::DARK)) {
+      if (busIn.theme != Theme::DARK) {
+        busOut.themeChanged = true;
+        busOut.theme = Theme::DARK;
+      }
+    }
     ImGui::EndMenu();
   }
 
@@ -51,20 +76,48 @@ void GUI::helpWindow(const GUIBusIn& busIn, GUIBusOut& busOut) {
   if (isHelpWindow) {
     ImGui::Begin("Help", &isHelpWindow, ImGuiWindowFlags_AlwaysAutoResize);
 
-    ImGui::TextUnformatted("Movement:");
-    ImGui::TextUnformatted("");
-    ImGui::TextUnformatted("E, Q - Up, Down");
-    ImGui::TextUnformatted("W, S - Forwards, Backwards");
-    ImGui::TextUnformatted("D, A - Right, Left");
-    ImGui::TextUnformatted("Shift - 5 times slower");
-    ImGui::TextUnformatted("Control - 5 times faster");
-    ImGui::TextUnformatted("");
-    ImGui::TextUnformatted("Function:");
-    ImGui::TextUnformatted("");
-    ImGui::TextUnformatted("Block Func:");
-    ImGui::TextUnformatted("Must return an int, if 0 - continue");
-    ImGui::TextUnformatted("Display Func:");
-    ImGui::TextUnformatted("Must return vec4 for a pixel color");
+    if (ImGui::TreeNode("Movement")) {
+      ImGui::TextUnformatted("");
+      ImGui::TextUnformatted("E/Q      ->  move up/down");
+      ImGui::TextUnformatted("W/S      ->  move forwards/backwards");
+      ImGui::TextUnformatted("D/A      ->  move right/left");
+      ImGui::TextUnformatted("Shift    ->  move 5 times slower");
+      ImGui::TextUnformatted("Control  ->  move 5 times faster");
+      ImGui::TextUnformatted("");
+
+      ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Windows")) {
+      ImGui::TextUnformatted("");
+      ImGui::TextUnformatted("Help (Alt+H)        ->  this window");
+      ImGui::TextUnformatted("Info (Alt+I)        ->  info about pos/fps/other");
+      ImGui::TextUnformatted("Parameters (Alt+P)  ->  parameters of the render");
+      ImGui::TextUnformatted("Functions (Alt+F)   ->  edit functions");
+      ImGui::TextUnformatted("Variables (Alt+V)   ->  add/delete/change variables");
+      ImGui::TextUnformatted("");
+      
+      ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Tools")) {
+      ImGui::TextUnformatted("");
+      ImGui::TextUnformatted("Screenshot  ->  take a screenshot as bmp");
+      ImGui::TextUnformatted("Save        ->  saves functions and variables");
+      ImGui::TextUnformatted("Load        ->  loades functions and variables");
+      ImGui::TextUnformatted("");
+      
+      ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Theme")) {
+      ImGui::TextUnformatted("");
+      ImGui::TextUnformatted("Existing themes: Classic, Light, Dark.");
+      ImGui::TextUnformatted("After changing theme the app will close.");
+      ImGui::TextUnformatted("");
+      
+      ImGui::TreePop();
+    }
 
     ImGui::End();
   }

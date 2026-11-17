@@ -1,14 +1,17 @@
 ## TODO
 
-- add good logging +-
-- add ability to change GUI color theme
 - make better help
-- make better shortcuts
+- add suport for macos
+- change bmp save to be through stblib
+- add more screenshot image formats (.png)
 
 - add release page to the site
 
 ## FINISHED
 
+- add good logging
+- add ability to change GUI color theme
+- make better shortcuts
 - put variable limit
 - remake GUI bus system
 - change formating
