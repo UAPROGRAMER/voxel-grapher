@@ -250,12 +250,15 @@ void VoxelGrapher::process(float time, float delta) {
   if (busOut.takeScreenshot) screenshot = true;
 
   // Chenking data GUI sent
-  if (screenshot && lastScreenshotTime + 2 <= time) {
-    lastScreenshotTime = time;
+  if (screenshot) {
+    if (lastScreenshotTime + 2 <= time) {
+      lastScreenshotTime = time;
 
-    createBmpImage(std::format("./data/screenshots/{}.bmp",
-                               std::to_string(std::time(nullptr))),
-                   renderWidth, renderHeight, screen.getPixels());
+      createBmpImage(std::format("./data/screenshots/{}.bmp",
+                                 std::to_string(std::time(nullptr))),
+                     renderWidth, renderHeight, screen.getPixels());
+    } else
+      screenshot = false;
   }
 
   if (busOut.resetProgram) gui.resetFuncs(defaultBlockFunc, defaultDisplayFunc);
