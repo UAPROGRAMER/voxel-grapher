@@ -3,7 +3,7 @@
 #include <format>
 #include <stdexcept>
 
-#include "../common/logs.hpp"
+#include "../common/logging.hpp"
 #include "opengl.hpp"
 
 Shader::Shader(std::string vert, std::string frag) {

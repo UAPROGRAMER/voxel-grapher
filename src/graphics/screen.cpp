@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "../common/logs.hpp"
+#include "../common/logging.hpp"
 #include "opengl.hpp"
 
 float displayVertices[] = {
@@ -148,16 +148,8 @@ void Screen::draw() const {
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-std::vector<uint8_t> Screen::getPixels() {
-  std::vector<uint8_t> screenshotRGBA;
-  screenshotRGBA.resize(renWidth * renHeight * 4ull);
-
-  glBindTexture(GL_TEXTURE_2D, texture);
-
-  glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                screenshotRGBA.data());
-
-  glBindTexture(GL_TEXTURE_2D, 0);
+std::vector<uint8_t> Screen::getPixelsBGR() {
+  std::vector<uint8_t> screenshotRGBA = getPixelsRGBA();
 
   std::vector<uint8_t> screenshotBGR;
   screenshotBGR.resize(renWidth * renHeight * 3);
@@ -169,4 +161,18 @@ std::vector<uint8_t> Screen::getPixels() {
   }
 
   return screenshotBGR;
+}
+
+std::vector<uint8_t> Screen::getPixelsRGBA() {
+  std::vector<uint8_t> screenshotRGBA;
+  screenshotRGBA.resize(renWidth * renHeight * 4ull);
+
+  glBindTexture(GL_TEXTURE_2D, texture);
+
+  glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                screenshotRGBA.data());
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  return screenshotRGBA;
 }

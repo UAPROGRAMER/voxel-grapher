@@ -8,10 +8,11 @@
 #include <stdexcept>
 #include <tuple>
 
-#include "common/logs.hpp"
+#include "common/logging.hpp"
 #include "common/preprocessor.hpp"
 #include "common/theme.hpp"
 #include "common/utils.hpp"
+#include "graphics/image.hpp"
 #include "graphics/imgui.hpp"
 #include "graphics/opengl.hpp"
 #include "gui.hpp"
@@ -254,9 +255,11 @@ void VoxelGrapher::process(float time, float delta) {
     if (lastScreenshotTime + 2 <= time) {
       lastScreenshotTime = time;
 
-      createBmpImage(std::format("./data/screenshots/{}.bmp",
-                                 std::to_string(std::time(nullptr))),
-                     renderWidth, renderHeight, screen.getPixels());
+      stbi_write_bmp(std::format("./data/screenshots/{}.bmp",
+                                 std::to_string(std::time(nullptr)))
+                         .c_str(),
+                     renderWidth, renderHeight, STBI_rgb_alpha,
+                     screen.getPixelsRGBA().data());
     } else
       screenshot = false;
   }

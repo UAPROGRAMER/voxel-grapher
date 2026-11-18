@@ -2,15 +2,16 @@
 
 - make better help +-
 - add suport for macos
-- change bmp save to be through stblib
 - add more screenshot image formats (.png)
 - turn all var names to lower
 - standartize what vars are available in functions and write them down
+- add ability to control screenshot resolution separatly
 
 - add release page to the site
 
 ## FINISHED
 
+- change bmp save to be through stblib
 - add good logging
 - add ability to change GUI color theme
 - make better shortcuts

@@ -1,13 +1,12 @@
-#include <stb/stb_image.h>
-
 #include <filesystem>
 #include <fstream>
 #include <optional>
 
-#include "common/logs.hpp"
+#include "common/logging.hpp"
 #include "common/utils.hpp"
 #include "graphics/imgui.hpp"
 #include "graphics/opengl.hpp"
+#include "graphics/image.hpp"
 #include "voxel_grapher.hpp"
 
 #ifdef __APPLE__
@@ -65,9 +64,12 @@ int main() {
     checkFile("./data/icons/icon-128.png");
     checkFile("./data/icons/icon.ico");
 
-    makeLog(LogType::INFO, "Intitializing GLFW.");
+    // Setup stb lib
+    //stbi_set_flip_vertically_on_load(true);
+    stbi_flip_vertically_on_write(true);
 
     // Glfw init
+    makeLog(LogType::INFO, "Intitializing GLFW.");
 
     glfwInit();
 

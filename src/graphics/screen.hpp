@@ -33,5 +33,7 @@ class Screen {
 
   void draw() const;
 
-  std::vector<uint8_t> getPixels();
+  std::vector<uint8_t> getPixelsBGR();
+
+  std::vector<uint8_t> getPixelsRGBA();
 };
