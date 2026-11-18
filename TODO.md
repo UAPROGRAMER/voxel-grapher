@@ -6,6 +6,9 @@
 - turn all var names to lower
 - standartize what vars are available in functions and write them down
 - add ability to control screenshot resolution separatly
+- add ability to add custom themes
+- change theme system
+- possibly migrate to toml (or just add toml suport)
 
 - add release page to the site
 

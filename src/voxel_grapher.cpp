@@ -255,11 +255,30 @@ void VoxelGrapher::process(float time, float delta) {
     if (lastScreenshotTime + 2 <= time) {
       lastScreenshotTime = time;
 
-      stbi_write_bmp(std::format("./data/screenshots/{}.bmp",
-                                 std::to_string(std::time(nullptr)))
-                         .c_str(),
-                     renderWidth, renderHeight, STBI_rgb_alpha,
-                     screen.getPixelsRGBA().data());
+      switch (busOut.screenshotFormat) {
+        default:
+        case ImageFormat::PNG:
+          stbi_write_png(std::format("./data/screenshots/{}.png",
+                                     std::to_string(std::time(nullptr)))
+                             .c_str(),
+                         renderWidth, renderHeight, STBI_rgb_alpha,
+                         screen.getPixelsRGBA().data(), 0);
+          break;
+        case ImageFormat::JPG:
+          stbi_write_jpg(std::format("./data/screenshots/{}.jpg",
+                                     std::to_string(std::time(nullptr)))
+                             .c_str(),
+                         renderWidth, renderHeight, STBI_rgb_alpha,
+                         screen.getPixelsRGBA().data(), 80);
+          break;
+        case ImageFormat::BMP:
+          stbi_write_bmp(std::format("./data/screenshots/{}.bmp",
+                                     std::to_string(std::time(nullptr)))
+                             .c_str(),
+                         renderWidth, renderHeight, STBI_rgb_alpha,
+                         screen.getPixelsRGBA().data());
+          break;
+      }
     } else
       screenshot = false;
   }

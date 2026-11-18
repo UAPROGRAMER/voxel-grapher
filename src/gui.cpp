@@ -8,6 +8,7 @@
 #include "common/theme.hpp"
 #include "common/utils.hpp"
 #include "graphics/glm.hpp"
+#include "graphics/image.hpp"
 #include "graphics/imgui.hpp"
 #include "imgui.h"
 
@@ -43,7 +44,23 @@ void GUI::menuBar(const GUIBusIn& busIn, GUIBusOut& busOut) {
   }
 
   if (ImGui::BeginMenu("Tools")) {
-    if (ImGui::MenuItem("Screenshot", "F2")) busOut.takeScreenshot = true;
+    if (ImGui::BeginMenu("Screenshot")) {
+      if (ImGui::MenuItem("png", "F2")) {
+        busOut.takeScreenshot = true;
+        busOut.screenshotFormat = ImageFormat::PNG;
+      }
+      if (ImGui::MenuItem("jpg")) {
+        busOut.takeScreenshot = true;
+        busOut.screenshotFormat = ImageFormat::JPG;
+      }
+      if (ImGui::MenuItem("bmp")) {
+        busOut.takeScreenshot = true;
+        busOut.screenshotFormat = ImageFormat::BMP;
+      }
+
+      ImGui::EndMenu();
+    }
+
     if (ImGui::MenuItem("Save", "Alt+S")) isSavePopup = true;
     if (ImGui::MenuItem("Load", "Alt+L")) isLoadPopup = true;
     ImGui::EndMenu();
@@ -91,12 +108,15 @@ void GUI::helpWindow(const GUIBusIn& busIn, GUIBusOut& busOut) {
     if (ImGui::TreeNode("Windows")) {
       ImGui::TextUnformatted("");
       ImGui::TextUnformatted("Help (Alt+H)        ->  this window");
-      ImGui::TextUnformatted("Info (Alt+I)        ->  info about pos/fps/other");
-      ImGui::TextUnformatted("Parameters (Alt+P)  ->  parameters of the render");
+      ImGui::TextUnformatted(
+          "Info (Alt+I)        ->  info about pos/fps/other");
+      ImGui::TextUnformatted(
+          "Parameters (Alt+P)  ->  parameters of the render");
       ImGui::TextUnformatted("Functions (Alt+F)   ->  edit functions");
-      ImGui::TextUnformatted("Variables (Alt+V)   ->  add/delete/change variables");
+      ImGui::TextUnformatted(
+          "Variables (Alt+V)   ->  add/delete/change variables");
       ImGui::TextUnformatted("");
-      
+
       ImGui::TreePop();
     }
 
@@ -106,7 +126,7 @@ void GUI::helpWindow(const GUIBusIn& busIn, GUIBusOut& busOut) {
       ImGui::TextUnformatted("Save        ->  saves functions and variables");
       ImGui::TextUnformatted("Load        ->  loades functions and variables");
       ImGui::TextUnformatted("");
-      
+
       ImGui::TreePop();
     }
 
@@ -115,7 +135,7 @@ void GUI::helpWindow(const GUIBusIn& busIn, GUIBusOut& busOut) {
       ImGui::TextUnformatted("Existing themes: Classic, Light, Dark.");
       ImGui::TextUnformatted("After changing theme the app will close.");
       ImGui::TextUnformatted("");
-      
+
       ImGui::TreePop();
     }
 
@@ -441,6 +461,11 @@ GUIBusOut GUI::process(const GUIBusIn& busIn) {
     paramWindow(busIn, busOut);
     functionWindow(busIn, busOut);
     variablesWindow(busIn, busOut);
+
+    // if (ImGui::Begin("Style editor")) {
+    //   ImGui::ShowStyleEditor();
+    //   ImGui::End();
+    // }
   }
 
   if (isLoadPopup) {

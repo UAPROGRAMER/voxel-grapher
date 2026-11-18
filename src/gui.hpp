@@ -7,6 +7,7 @@
 #include "common/theme.hpp"
 #include "common/variable.hpp"
 #include "graphics/glm.hpp"
+#include "graphics/image.hpp"
 
 struct GUIBusIn {
   bool cameraMode = false;
@@ -42,6 +43,7 @@ struct GUIBusIn {
 
 struct GUIBusOut {
   bool takeScreenshot = false;
+  ImageFormat screenshotFormat = ImageFormat::PNG;
 
   float maxRayLength = 0;
 
