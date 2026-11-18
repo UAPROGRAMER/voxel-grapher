@@ -1,9 +1,11 @@
 ## TODO
 
-- make better help
+- make better help +-
 - add suport for macos
 - change bmp save to be through stblib
 - add more screenshot image formats (.png)
+- turn all var names to lower
+- standartize what vars are available in functions and write them down
 
 - add release page to the site
 

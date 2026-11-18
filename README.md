@@ -79,9 +79,17 @@ Windows:
 - Info window
 - Parameters window
 - Functions window
+- Variables window
 
 Tools:
 - Screenshot
+- Save
+- Load
+
+Themes:
+- Classic
+- Light
+- Dark
 
 ### Controls
 
@@ -95,17 +103,23 @@ Q - move down
 Shift - 5 times slower \
 Control - 5 times faster
 
-Alt+Z - open help window
-Alt+X - open info window
-Alt+C - open parameters window
-Alt+V - open functions window
+Alt+H - open help window \
+Alt+I - open info window \
+Alt+P - open parameters window \
+Alt+F - open functions window \
+Alt+V - open variables window
+
 F2 - take screenshot
+
+Alt+1 - classic theme \
+Alt+2 - light theme \
+Alt+3 - dark theme
 
 ### Variables
 
 Variables that you create can be used in `blockFunction` and `displayFuction`. When you create a variable you will have to put a valid name (id rules), step, min value, max value.
 
-**!If you create 2 variables that while in lower case are the same, saving and loading will be an undefined behaviour.**
+**!If you create 2 variables that in lower case are the same, saving and loading will be an undefined behaviour.**
 
 ### Graphs
 
