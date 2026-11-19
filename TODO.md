@@ -2,11 +2,6 @@
 
 - add suport for macos
 
-- make better help +-
-- standartize what vars are available in functions and write them down
-
-- add ability to control screenshot resolution separatly
-
 - add ability to add custom themes
 - change theme system
 - possibly migrate to toml (or just add toml suport)
@@ -15,6 +10,8 @@
 
 ## FINISHED
 
+- make better help +-
+- standartize what vars are available in functions and write them down
 - add more screenshot image formats (.png)
 - change bmp save to be through stblib
 - add good logging

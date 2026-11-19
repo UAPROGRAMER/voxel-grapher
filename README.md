@@ -149,7 +149,7 @@ Consts you can use:
 - `float phi` - to the tenth digit
 
 Vars you can use:
-- `ivec3 coords` - voxel coords
+- `ivec3 coords` - coords of the voxel
 - `float x` - short for coords.x
 - `float y` - short for coords.y
 - `float z` - short for coords.z
@@ -159,6 +159,8 @@ Vars you can use:
 Funcs you can use:
 - `void stop()` - stops calculating ray after this voxel
 - `bool approx(float a, float b, float c)` - returns `true` if difference between `a` and `b` is smaller or equal to `c`
+
+Returns int that will be passed to display function. If return is 0, calculations continue.
 
 ### Display Function
 
