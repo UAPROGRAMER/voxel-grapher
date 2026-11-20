@@ -4,12 +4,12 @@
 [submodule "extern/imgui"]
 	path = extern/imgui
 	url = https://github.com/ocornut/imgui
-[submodule "extern/mINI"]
-	path = extern/mINI
-	url = https://github.com/metayeti/mINI
 [submodule "extern/glfw"]
 	path = extern/glfw
 	url = https://github.com/glfw/glfw
 [submodule "extern/stb"]
 	path = extern/stb
 	url = https://github.com/nothings/stb
+[submodule "extern/tomlplusplus"]
+	path = extern/tomlplusplus
+	url = https://github.com/marzer/tomlplusplus

@@ -4,6 +4,7 @@
 #include <format>
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
 
 void makeLog(LogType type, std::string_view msg) {
   static std::stringstream logStream;
@@ -28,6 +29,6 @@ void makeLog(LogType type, std::string_view msg) {
 
     logFile << logStream.rdbuf();
 
-    throw std::exception();
+    throw std::runtime_error(logStream.str());
   }
 }

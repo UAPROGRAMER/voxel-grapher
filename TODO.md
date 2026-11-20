@@ -4,12 +4,36 @@
 
 - add ability to add custom themes
 - change theme system
-- possibly migrate to toml (or just add toml suport)
+
+- FIX bug where when hiding and showing the window, program goes black
+
+- possible add ability to make gifs?
+- add teleport tool
+
+- lower framerate when not focused
+- add settings
+- save user parameters
+
+- maybe remake parameters to be render settings
+
+- remove variable name limitation
+- add variable == overload
+
+- restructure gui to have a full folder for itself
+
+- add button center align where needed
+
+- possibly migrate to use xml for imgui gui
+
+- make program error gui a popup
+
+- replace throws with results where needed
 
 - add release page to the site
 
 ## FINISHED
 
+- possibly migrate to toml (or just add toml suport)
 - make better help +-
 - standartize what vars are available in functions and write them down
 - add more screenshot image formats (.png)

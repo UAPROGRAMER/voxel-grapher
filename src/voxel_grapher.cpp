@@ -1,17 +1,23 @@
 #include "voxel_grapher.hpp"
 
-#include <mini/ini.h>
-
 #include <exception>
 #include <filesystem>
 #include <format>
+#include <fstream>
 #include <stdexcept>
+#include <toml++/impl/array.hpp>
+#include <toml++/impl/forward_declarations.hpp>
+#include <toml++/impl/node_view.hpp>
+#include <toml++/impl/table.hpp>
+#include <toml++/toml.hpp>
 #include <tuple>
+#include <vector>
 
 #include "common/logging.hpp"
 #include "common/preprocessor.hpp"
 #include "common/theme.hpp"
 #include "common/utils.hpp"
+#include "common/variable.hpp"
 #include "graphics/image.hpp"
 #include "graphics/imgui.hpp"
 #include "graphics/opengl.hpp"
@@ -328,25 +334,29 @@ void VoxelGrapher::process(float time, float delta) {
     std::string displayFunc = readFileToString(
         std::format("./data/saves/{}/display.txt", busOut.savefile));
 
-    mINI::INIFile varsFile(
-        std::format("./data/saves/{}/vars.ini", busOut.savefile));
+    toml::table tbl = toml::parse_file(
+        std::format("./data/saves/{}/vars.toml", busOut.savefile));
 
-    mINI::INIStructure ini;
+    auto varNamesArray = tbl[".names"]["names"];
 
-    varsFile.read(ini);
+    std::vector<std::string> varNames;
+    if (toml::array* arr = varNamesArray.as_array()) {
+      varNames.reserve(arr->size());
 
-    for (const auto& variable : ini) {
-      if (variable.first.empty()) continue;
+      for (size_t i = 0; i < arr->size(); i++)
+        varNames.push_back((arr->at(i).value<std::string>()).value());
+    }
 
-      variables.push_back(Variable(variable.first));
+    for (const auto& name : varNames) {
+      variables.push_back(Variable(name));
       variables.at(variables.size() - 1).value =
-          std::stof(variable.second.get("value"));
+          tbl[name]["value"].value<float>().value();
       variables.at(variables.size() - 1).step =
-          std::stof(variable.second.get("step"));
+          tbl[name]["step"].value<float>().value();
       variables.at(variables.size() - 1).min =
-          std::stof(variable.second.get("min"));
+          tbl[name]["min"].value<float>().value();
       variables.at(variables.size() - 1).max =
-          std::stof(variable.second.get("max"));
+          tbl[name]["max"].value<float>().value();
     }
 
     gui.resetFuncs(blockFunc, displayFunc);
@@ -364,19 +374,24 @@ void VoxelGrapher::process(float time, float delta) {
     writeTextFile(std::format("./data/saves/{}/display.txt", busOut.savefile),
                   busOut.displayFunc);
 
-    mINI::INIFile varsFile(
-        std::format("./data/saves/{}/vars.ini", busOut.savefile));
+    toml::array varNamesArr;
+    for (const auto& variable : variables) varNamesArr.push_back(variable.name);
 
-    mINI::INIStructure ini;
+    toml::table tbl{{".names", toml::table{{"names", std::move(varNamesArr)}}}};
 
     for (const auto& variable : variables) {
-      ini[variable.name]["value"] = std::to_string(variable.value);
-      ini[variable.name]["step"] = std::to_string(variable.step);
-      ini[variable.name]["min"] = std::to_string(variable.min);
-      ini[variable.name]["max"] = std::to_string(variable.max);
+      toml::table varTbl{
+          {"value", variable.value},
+          {"step", variable.step},
+          {"min", variable.min},
+          {"max", variable.max},
+      };
+      tbl.emplace(variable.name, varTbl);
     }
 
-    varsFile.generate(ini);
+    std::ofstream file(std::format("./data/saves/{}/vars.toml", busOut.savefile));
+
+    file << tbl;
 
     makeLog(LogType::INFO, std::format("Saved file \"{}\".", busOut.savefile));
   }

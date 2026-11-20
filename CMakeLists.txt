@@ -40,9 +40,9 @@ file(GLOB imgui CONFIGURE_DEPENDS
 
 add_subdirectory(extern/glm)
 
-# mINI
+# tomlplusplus
 
-add_subdirectory(extern/mINI)
+add_subdirectory(extern/tomlplusplus)
 
 # SOURCE
 
@@ -68,7 +68,7 @@ elseif(UNIX AND NOT APPLE)
 endif()
 
 target_link_libraries(voxel-grapher PRIVATE
-  glfw OpenGL::GL mINI glm
+  glfw OpenGL::GL glm tomlplusplus::tomlplusplus
 )
 
 target_include_directories(voxel-grapher PRIVATE

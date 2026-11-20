@@ -1,0 +1,8 @@
+['.names']
+names = [ 'Radius' ]
+
+[Radius]
+max = 5.0
+min = 0.0
+step = 0.009999999776482582
+value = 1.0499999523162842
