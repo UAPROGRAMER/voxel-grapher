@@ -8,6 +8,7 @@
 #include "../common/variable.hpp"
 #include "../graphics/glm.hpp"
 #include "../graphics/image.hpp"
+#include "glm/ext/vector_float3.hpp"
 
 struct GUIBusIn {
   bool cameraMode = false;
@@ -80,6 +81,9 @@ struct GUIBusOut {
 
   bool themeChanged = false;
   Theme theme;
+
+  bool teleport = false;
+  glm::vec3 teleportPos = glm::vec3(0);
 };
 
 class GUI {
@@ -114,6 +118,9 @@ class GUI {
   float variableMin = 0;
   float variableMax = 0;
 
+  bool isTeleportPopup = false;
+  float teleportPos[3] = {0};
+
   float renderScale = 1;
 
   void menuBar(const GUIBusIn& busIn, GUIBusOut& busOut);
@@ -135,6 +142,8 @@ class GUI {
   void addVariablePopup(const GUIBusIn& busIn, GUIBusOut& busOut);
 
   void changeVariablePopup(const GUIBusIn& busIn, GUIBusOut& busOut);
+
+  void teleportPopup(const GUIBusIn& busIn, GUIBusOut& busOut);
 
  public:
   GUI(std::string_view blockFunc, std::string_view displayFunc);

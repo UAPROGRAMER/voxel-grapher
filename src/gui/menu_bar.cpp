@@ -36,6 +36,17 @@ void GUI::menuBar(const GUIBusIn& busIn, GUIBusOut& busOut) {
       ImGui::EndMenu();
     }
 
+    if (ImGui::BeginMenu("Teleport")) {
+      if (ImGui::MenuItem("Center", "Alt+C")) {
+        busOut.teleport = true;
+        busOut.teleportPos = glm::vec3(0);
+      }
+
+      if (ImGui::MenuItem("Custom", "Alt+T")) isTeleportPopup = true;
+
+      ImGui::EndMenu();
+    }
+
     if (ImGui::MenuItem("Save", "Alt+S")) isSavePopup = true;
     if (ImGui::MenuItem("Load", "Alt+L")) isLoadPopup = true;
     ImGui::EndMenu();

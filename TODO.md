@@ -23,6 +23,8 @@
 
 ## FINISHED
 
+- remove variable name limitation
+- add variable == overload
 - possibly migrate to toml (or just add toml suport)
 - make better help +-
 - standartize what vars are available in functions and write them down

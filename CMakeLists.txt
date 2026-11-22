@@ -58,7 +58,8 @@ file(GLOB source CONFIGURE_DEPENDS
 find_package(OpenGL REQUIRED)
 
 if(WIN32)
-  add_executable(voxel-grapher WIN32 ${glad} ${source} ${imgui} voxel-grapher.rc)
+  add_executable(voxel-grapher WIN32 ${glad} ${source} ${imgui} voxel-grapher.rc
+    src/gui/teleport_popup.cpp)
   target_link_options(voxel-grapher PRIVATE "-static")
 elseif(UNIX AND NOT APPLE)
   add_executable(voxel-grapher ${glad} ${source} ${imgui})

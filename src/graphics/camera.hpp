@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glm.hpp"
+#include "glm/ext/vector_float3.hpp"
 
 class Camera {
  private:
@@ -37,6 +38,8 @@ class Camera {
   void moveRight(float length);
 
   void moveUp(float length);
+
+  void setPos(glm::vec3 pos);
 
   glm::vec3 getPos() const;
 

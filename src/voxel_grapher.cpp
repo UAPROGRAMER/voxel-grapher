@@ -462,6 +462,8 @@ void VoxelGrapher::process(float time, float delta) {
     } else
       makeLog(LogType::ERROR, "Failed to find theme.");
   }
+
+  if (busOut.teleport) camera.setPos(busOut.teleportPos);
 }
 
 void VoxelGrapher::draw(float time, float delta) const {

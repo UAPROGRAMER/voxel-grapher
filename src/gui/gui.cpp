@@ -73,32 +73,36 @@ GUIBusOut GUI::process(const GUIBusIn& busIn) {
     savefiles.clear();
     savefilesC.clear();
     savefileIndex = (size_t)-1;
-
+    
     for (const auto& file : std::filesystem::directory_iterator("./data/saves"))
-      if (!std::filesystem::is_regular_file(file))
-        savefiles.push_back(file.path().stem().string());
-
+    if (!std::filesystem::is_regular_file(file))
+    savefiles.push_back(file.path().stem().string());
+  
     std::sort(savefiles.begin(), savefiles.end());
 
     savefilesC.reserve(savefiles.size());
-
+    
     for (const auto& file : savefiles) savefilesC.push_back(file.c_str());
-
+    
     ImGui::OpenPopup("Load");
     ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
-                            ImGuiCond_Appearing, ImVec2(0.5, 0.5));
+    ImGuiCond_Appearing, ImVec2(0.5, 0.5));
   }
-
+  
+  loadPopup(busIn, busOut);
+  
   if (isSavePopup) {
     isSavePopup = false;
 
     savefileNameText.clear();
     savefileNameText.resize(65);
-
+    
     ImGui::OpenPopup("Save");
     ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
-                            ImGuiCond_Appearing, ImVec2(0.5, 0.5));
+    ImGuiCond_Appearing, ImVec2(0.5, 0.5));
   }
+
+  savePopup(busIn, busOut);
 
   if (isAddVariablePopup) {
     isAddVariablePopup = false;
@@ -115,6 +119,8 @@ GUIBusOut GUI::process(const GUIBusIn& busIn) {
                             ImGuiCond_Appearing, ImVec2(0.5, 0.5));
   }
 
+  addVariablePopup(busIn, busOut);
+
   if (isChangeVariablePopup) {
     isChangeVariablePopup = false;
 
@@ -126,11 +132,22 @@ GUIBusOut GUI::process(const GUIBusIn& busIn) {
     ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
                             ImGuiCond_Appearing, ImVec2(0.5, 0.5));
   }
-
-  loadPopup(busIn, busOut);
-  savePopup(busIn, busOut);
-  addVariablePopup(busIn, busOut);
+  
   changeVariablePopup(busIn, busOut);
+
+  if (isTeleportPopup) {
+    isTeleportPopup = false;
+
+    teleportPos[0] = 0;
+    teleportPos[1] = 0;
+    teleportPos[2] = 0;
+
+    ImGui::OpenPopup("Teleport");
+    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(),
+                            ImGuiCond_Appearing, ImVec2(0.5, 0.5));
+  }
+
+  teleportPopup(busIn, busOut);
 
   return busOut;
 }

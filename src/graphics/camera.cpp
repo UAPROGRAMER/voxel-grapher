@@ -29,6 +29,8 @@ void Camera::moveRight(float length) {
 
 void Camera::moveUp(float length) { pos += length * glm::vec3(0, 1, 0); }
 
+void Camera::setPos(glm::vec3 _pos) { pos = _pos; }
+
 glm::vec3 Camera::getPos() const { return pos; }
 
 void Camera::mouse(double xpos, double ypos, bool focus) {
