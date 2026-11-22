@@ -7,7 +7,6 @@
 
 - FIX bug where when hiding and showing the window, program goes black
 
-- possible add ability to make gifs?
 - add teleport tool
 
 - lower framerate when not focused
@@ -22,8 +21,6 @@
 - restructure gui to have a full folder for itself
 
 - add button center align where needed
-
-- possibly migrate to use xml for imgui gui
 
 - make program error gui a popup
 

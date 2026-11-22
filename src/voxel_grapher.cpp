@@ -21,7 +21,7 @@
 #include "graphics/image.hpp"
 #include "graphics/imgui.hpp"
 #include "graphics/opengl.hpp"
-#include "gui.hpp"
+#include "gui/gui.hpp"
 
 constexpr std::size_t MAX_VARIABLES = 256;
 
@@ -389,7 +389,8 @@ void VoxelGrapher::process(float time, float delta) {
       tbl.emplace(variable.name, varTbl);
     }
 
-    std::ofstream file(std::format("./data/saves/{}/vars.toml", busOut.savefile));
+    std::ofstream file(
+        std::format("./data/saves/{}/vars.toml", busOut.savefile));
 
     file << tbl;
 

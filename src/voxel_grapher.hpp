@@ -8,7 +8,7 @@
 #include "graphics/opengl.hpp"
 #include "graphics/screen.hpp"
 #include "graphics/shader.hpp"
-#include "gui.hpp"
+#include "gui/gui.hpp"
 
 class VoxelGrapher {
  private:

@@ -4,10 +4,10 @@
 #include <string>
 #include <vector>
 
-#include "common/theme.hpp"
-#include "common/variable.hpp"
-#include "graphics/glm.hpp"
-#include "graphics/image.hpp"
+#include "../common/theme.hpp"
+#include "../common/variable.hpp"
+#include "../graphics/glm.hpp"
+#include "../graphics/image.hpp"
 
 struct GUIBusIn {
   bool cameraMode = false;
@@ -122,9 +122,9 @@ class GUI {
 
   void infoWindow(const GUIBusIn& busIn, GUIBusOut& busOut);
 
-  void paramWindow(const GUIBusIn& busIn, GUIBusOut& busOut);
+  void paramsWindow(const GUIBusIn& busIn, GUIBusOut& busOut);
 
-  void functionWindow(const GUIBusIn& busIn, GUIBusOut& busOut);
+  void functionsWindow(const GUIBusIn& busIn, GUIBusOut& busOut);
 
   void variablesWindow(const GUIBusIn& busIn, GUIBusOut& busOut);
 
