@@ -15,13 +15,6 @@
 
 - maybe remake parameters to be render settings
 
-- remove variable name limitation
-- add variable == overload
-
-- restructure gui to have a full folder for itself
-
-- add button center align where needed
-
 - make program error gui a popup
 
 - replace throws with results where needed

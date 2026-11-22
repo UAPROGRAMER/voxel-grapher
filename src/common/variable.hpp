@@ -20,5 +20,7 @@ struct Variable {
   Variable(Variable&& other) noexcept;
   Variable& operator=(Variable&& other) noexcept;
 
+  bool operator==(const Variable& other) const;
+
   std::string toString() const;
 };

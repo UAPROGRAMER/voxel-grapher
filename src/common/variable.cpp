@@ -25,6 +25,10 @@ Variable& Variable::operator=(Variable&& other) noexcept {
   return *this;
 }
 
+bool Variable::operator==(const Variable& other) const {
+  return name == other.name;
+}
+
 std::string Variable::toString() const {
   return std::format("uniform float {};\n", name);
 }

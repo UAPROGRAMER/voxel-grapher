@@ -65,14 +65,3 @@ void writeTextFile(std::string_view path, std::string_view str) {
 
   file.flush();
 }
-
-bool isValidId(std::string_view str) {
-  if (str.empty()) return false;
-
-  if (!isalpha(str.at(0))) return false;
-
-  for (char c : str)
-    if (!isalnum(c) && c != '_') return false;
-
-  return true;
-}

@@ -1,3 +1,6 @@
+#include <algorithm>
+#include <string_view>
+
 #include "../common/utils.hpp"
 #include "../graphics/imgui.hpp"
 #include "gui.hpp"
@@ -22,13 +25,9 @@ void GUI::addVariablePopup(const GUIBusIn& busIn, GUIBusOut& busOut) {
     ImGui::InputFloat("##Max", &variableMax);
 
     if (ImGui::Button("Add") &&
-            isValidId(std::string(variableNameText.data())) &&
-            [&](const std::string& name) -> bool {
-          for (const auto& variable : busIn.variables)
-            if (variable.name == name) return false;
-
-          return true;
-        }(std::string(variableNameText.data()))) {
+        std::find(busIn.variables.begin(), busIn.variables.end(),
+                  Variable(std::string_view(variableNameText.data()))) ==
+            busIn.variables.end()) {
       busOut.variableAdded = true;
 
       busOut.variableName = std::string(variableNameText.data());
